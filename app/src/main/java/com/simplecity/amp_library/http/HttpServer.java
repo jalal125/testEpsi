@@ -151,6 +151,10 @@ public class HttpServer {
 
             return newFixedLengthResponse(Response.Status.OK, mimeTypeImage, imageInputStream, imageBytesToServe.length);
         }
+
+        private String getMimeType(String filePath) {
+            return HttpServer.getMimeType(filePath);
+        }
     }
 
     private void cleanupAudioStream() {
@@ -201,7 +205,7 @@ public class HttpServer {
         mimeTypes = Collections.unmodifiableMap(map);
     }
 
-    private String getMimeType(String filePath) {
+    private static String getMimeType(String filePath) {
         String extension = filePath.substring(filePath.lastIndexOf(".") + 1);
         return mimeTypes.getOrDefault(extension, "application/octet-stream");
     }

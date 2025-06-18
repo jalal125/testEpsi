@@ -17,6 +17,10 @@ public class Operators {
 
     private static final String TAG = "Operators";
 
+    private Operators() {
+        // Private constructor to prevent instantiation
+    }
+
     public static List<Album> songsToAlbums(List<Song> songs) {
 
         HashMap<Long, Album> albumMap = new HashMap<>();

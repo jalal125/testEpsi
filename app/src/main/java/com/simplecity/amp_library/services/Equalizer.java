@@ -179,21 +179,6 @@ public class Equalizer {
             }
         }
 
-        //        public void enableReverb(boolean enable) {
-        //            if (enable != mPresetReverb.getEnabled()) {
-        //                if (!enable) {
-        //                    mPresetReverb.setPreset((short) 0);
-        //                }
-        //                mPresetReverb.setEnabled(enable);
-        //            }
-        //        }
-
-        //        public void setReverbPreset(short preset) {
-        //            if (mPresetReverb.getEnabled() && mPresetReverb.getPreset() != preset) {
-        //                mPresetReverb.setPreset(preset);
-        //            }
-        //        }
-
         public void release() {
             equalizer.release();
             bassBoost.release();
@@ -226,8 +211,7 @@ public class Equalizer {
                         Log.e(TAG, "Failed to open EQ session.. EffectSet error " + e);
                     }
                 }
-            }
-            if (action.equals(ACTION_CLOSE_EQUALIZER_SESSION)) {
+            } else if (action.equals(ACTION_CLOSE_EQUALIZER_SESSION)) {
                 EffectSet gone = mAudioSessions.remove(sessionId);
                 if (gone != null) {
                     gone.release();
@@ -302,8 +286,8 @@ public class Equalizer {
      */
     public synchronized void update() {
         try {
-            for (Integer sessionId : mAudioSessions.keySet()) {
-                updateDsp(mAudioSessions.get(sessionId));
+            for (Map.Entry<Integer, EffectSet> entry : mAudioSessions.entrySet()) {
+                updateDsp(entry.getValue());
             }
         } catch (NoSuchMethodError e) {
             Crashlytics.log("No such method error thrown when updating equalizer.. " + e.getMessage());
@@ -319,15 +303,6 @@ public class Equalizer {
         } catch (Exception e) {
             Log.e(TAG, "Error enabling bass boost!", e);
         }
-
-        //        try {
-        //            short preset = Short.decode(sharedPreferences.getString("audiofx.reverb.preset", String.valueOf(PresetReverb.PRESET_NONE)));
-        //            session.enableReverb(globalEnabled && (preset > 0));
-        //            session.setReverbPreset(preset);
-        //
-        //        } catch (Exception e) {
-        //            Log.e(TAG, "Error enabling reverb preset", e);
-        //        }
 
         try {
             session.enableEqualizer(globalEnabled);

@@ -49,6 +49,10 @@ public final class ShuttleUtils {
 
     private final static String TAG = "ShuttleUtils";
 
+    private ShuttleUtils() {
+        // Private constructor to prevent instantiation
+    }
+
     @NonNull
     public static Intent getShuttleStoreIntent(@NonNull String packageName) {
         String uri;
