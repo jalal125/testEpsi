@@ -33,8 +33,8 @@ public class Song implements
 
     private static final String TAG = "Song";
 
-    private long id;
-    public String name;
+    public long id;
+    private String name;
     public String artistName;
     public long artistId;
     public String albumName;
@@ -70,6 +70,8 @@ public class Song implements
     private String artworkKey;
     private String sortKey;
 
+    public static final String COLUMN_ALBUM_ARTIST = "album_artist";
+
     public static String[] getProjection() {
         return new String[] {
                 MediaStore.Audio.Media._ID,
@@ -85,7 +87,7 @@ public class Song implements
                 MediaStore.Audio.Media.DATE_ADDED,
                 MediaStore.Audio.Media.IS_PODCAST,
                 MediaStore.Audio.Media.BOOKMARK,
-                "album_artist"
+                Song.COLUMN_ALBUM_ARTIST
         };
     }
 
@@ -129,8 +131,8 @@ public class Song implements
         path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
 
         albumArtistName = artistName;
-        if (cursor.getColumnIndex("album_artist") != -1) {
-            String albumArtist = cursor.getString(cursor.getColumnIndex("album_artist"));
+        if (cursor.getColumnIndex(COLUMN_ALBUM_ARTIST) != -1) {
+            String albumArtist = cursor.getString(cursor.getColumnIndex(COLUMN_ALBUM_ARTIST));
             if (albumArtist != null) {
                 albumArtistName = albumArtist;
             }
@@ -157,7 +159,7 @@ public class Song implements
 
     public int getPlayCount(Context context) {
 
-        int localPlayCount = 0;
+        int playCount = 0;
 
         Uri playCountUri = PlayCountTable.URI;
         Uri appendedUri = ContentUris.withAppendedId(playCountUri, id);
@@ -281,11 +283,9 @@ public class Song implements
     }
 
     public String getFileSizeLabel() {
-        if (fileSizeLabel == null) {
-            if (!TextUtils.isEmpty(path)) {
-                File file = new File(path);
-                fileSizeLabel = FileHelper.getHumanReadableSize(file.length());
-            }
+        if (fileSizeLabel == null && !TextUtils.isEmpty(path)) {
+            File file = new File(path);
+            fileSizeLabel = FileHelper.getHumanReadableSize(file.length());
         }
         return fileSizeLabel;
     }

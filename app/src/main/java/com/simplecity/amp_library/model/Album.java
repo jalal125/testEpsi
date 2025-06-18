@@ -18,21 +18,33 @@ import java.util.List;
 
 public class Album implements Serializable, ArtworkProvider, Comparable<Album>, Sortable {
 
+    private static final long serialVersionUID = 1L;
+
     private long id;
-    public String name;
-    public List<Artist> artists = new ArrayList<>();
-    public String albumArtistName;
-    public int year;
-    public int numSongs;
-    public int numDiscs;
-    public long lastPlayed;
-    public long dateAdded;
-    public List<String> paths = new ArrayList<>();
-    public int songPlayCount;
+    private String name;
+    private List<Artist> artists = new ArrayList<>();
+    private String albumArtistName;
+    private int year;
+    private int numSongs;
+    private int numDiscs;
+    private long lastPlayed;
+    private long dateAdded;
+    private List<String> paths = new ArrayList<>();
+    private int songPlayCount;
     private String artworkKey;
     private String sortKey;
 
-    public Album(long id, String name, List<Artist> artists, String albumArtistName, int numSongs, int numDiscs, int year, long lastPlayed, long dateAdded, List<String> paths, int songPlayCount) {
+    public Album(long id,
+                 String name,
+                 List<Artist> artists,
+                 String albumArtistName,
+                 int numSongs,
+                 int numDiscs,
+                 int year,
+                 long lastPlayed,
+                 long dateAdded,
+                 List<String> paths,
+                 int songPlayCount) {
         this.id = id;
         this.name = name;
         this.artists = artists;
@@ -126,18 +138,72 @@ public class Album implements Serializable, ArtworkProvider, Comparable<Album>, 
         }
 
         public Album build() {
-            return new Album(id, name, artists, albumArtistName, numSongs, numDiscs, year, lastPlayed, dateAdded, paths, songPlayCount);
+            return new Album(
+                id, name, artists, albumArtistName,
+                numSongs, numDiscs, year,
+                lastPlayed, dateAdded, paths, songPlayCount
+            );
         }
     }
 
+    // -- Accessors for all fields --
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Artist> getArtists() {
+        return artists;
+    }
+
+    public String getAlbumArtistName() {
+        return albumArtistName;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public int getNumSongs() {
+        return numSongs;
+    }
+
+    public int getNumDiscs() {
+        return numDiscs;
+    }
+
+    public long getLastPlayed() {
+        return lastPlayed;
+    }
+
+    public long getDateAdded() {
+        return dateAdded;
+    }
+
+    public List<String> getPaths() {
+        return paths;
+    }
+
+    public int getSongPlayCount() {
+        return songPlayCount;
+    }
+
     public AlbumArtist getAlbumArtist() {
-        return new AlbumArtist.Builder().name(albumArtistName).album(this).build();
+        return new AlbumArtist.Builder()
+            .name(albumArtistName)
+            .album(this)
+            .build();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Album album = (Album) o;
         if (id != album.id) return false;
         return name != null ? name.equals(album.name) : album.name == null;
@@ -153,16 +219,16 @@ public class Album implements Serializable, ArtworkProvider, Comparable<Album>, 
     @Override
     public String toString() {
         return "Album{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", artists=" + artists +
-                ", albumArtistName='" + albumArtistName + '\'' +
-                ", year=" + year +
-                ", numSongs=" + numSongs +
-                ", lastPlayed=" + lastPlayed +
-                ", dateAdded=" + dateAdded +
-                ", paths=" + paths +
-                '}';
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", artists=" + artists +
+               ", albumArtistName='" + albumArtistName + '\'' +
+               ", year=" + year +
+               ", numSongs=" + numSongs +
+               ", lastPlayed=" + lastPlayed +
+               ", dateAdded=" + dateAdded +
+               ", paths=" + paths +
+               '}';
     }
 
     @Override
@@ -194,8 +260,8 @@ public class Album implements Serializable, ArtworkProvider, Comparable<Album>, 
     public String getRemoteArtworkUrl() {
         try {
             return "https://artwork.shuttlemusicplayer.app/api/v1/artwork" +
-                    "?artist=" + URLEncoder.encode(albumArtistName, Charset.forName("UTF-8").name()) +
-                    "&album=" + URLEncoder.encode(name, Charset.forName("UTF-8").name());
+                   "?artist=" + URLEncoder.encode(albumArtistName, Charset.forName("UTF-8").name()) +
+                   "&album="  + URLEncoder.encode(name, Charset.forName("UTF-8").name());
         } catch (UnsupportedEncodingException e) {
             return null;
         }

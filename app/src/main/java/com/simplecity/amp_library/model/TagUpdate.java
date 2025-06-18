@@ -5,285 +5,126 @@ import org.jaudiotagger.tag.Tag;
 
 public class TagUpdate {
 
-    String title;
-    String album;
-    String artist;
-    String albumArtist;
-    String genre;
-    String year;
-    String track;
-    String trackTotal;
-    String disc;
-    String discTotal;
-    String lyrics;
-    String comment;
+    private String title;
+    private String album;
+    private String artist;
+    private String albumArtist;
+    private String genre;
+    private String year;
+    private String track;
+    private String trackTotal;
+    private String disc;
+    private String discTotal;
+    private String lyrics;
+    private String comment;
 
-    boolean titleHasChanged;
-    boolean albumHasChanged;
-    boolean artistHasChanged;
-    boolean albumArtistHasChanged;
-    boolean genreHasChanged;
-    boolean yearHasChanged;
-    boolean trackHasChanged;
-    boolean trackTotalHasChanged;
-    boolean discHasChanged;
-    boolean discTotalHasChanged;
-    boolean lyricsHasChanged;
-    boolean commentHasChanged;
+    private boolean titleHasChanged;
+    private boolean albumHasChanged;
+    private boolean artistHasChanged;
+    private boolean albumArtistHasChanged;
+    private boolean genreHasChanged;
+    private boolean yearHasChanged;
+    private boolean trackHasChanged;
+    private boolean trackTotalHasChanged;
+    private boolean discHasChanged;
+    private boolean discTotalHasChanged;
+    private boolean lyricsHasChanged;
+    private boolean commentHasChanged;
 
     public TagUpdate(Tag tag) {
         try {
             this.title = tag.getFirst(FieldKey.TITLE);
         } catch (UnsupportedOperationException ignored) {
+            // Field not supported
         }
         try {
             this.album = tag.getFirst(FieldKey.ALBUM);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.artist = tag.getFirst(FieldKey.ARTIST);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.albumArtist = tag.getFirst(FieldKey.ALBUM_ARTIST);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.genre = tag.getFirst(FieldKey.GENRE);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.year = tag.getFirst(FieldKey.YEAR);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.track = tag.getFirst(FieldKey.TRACK);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.trackTotal = tag.getFirst(FieldKey.TRACK_TOTAL);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.disc = tag.getFirst(FieldKey.DISC_NO);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.discTotal = tag.getFirst(FieldKey.DISC_TOTAL);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.lyrics = tag.getFirst(FieldKey.LYRICS);
-        } catch (UnsupportedOperationException ignored) {
-        }
+        } catch (UnsupportedOperationException ignored) {}
         try {
             this.comment = tag.getFirst(FieldKey.COMMENT);
-        } catch (UnsupportedOperationException ignored) {
-        }
-    }
-
-    public void softSetTitle(String title) {
-        if (title == null) {
-            return;
-        }
-        if (this.title == null || !this.title.equals(title)) {
-            this.title = title;
-            titleHasChanged = true;
-        }
-    }
-
-    public void softSetAlbum(String album) {
-        if (album == null) {
-            return;
-        }
-        if (this.album == null || !this.album.equals(album)) {
-            this.album = album;
-            albumHasChanged = true;
-        }
-    }
-
-    public void softSetArtist(String artist) {
-        if (artist == null) {
-            return;
-        }
-        if (this.artist == null || !this.artist.equals(artist)) {
-            this.artist = artist;
-            artistHasChanged = true;
-        }
-    }
-
-    public void softSetAlbumArtist(String albumArtist) {
-        if (albumArtist == null) {
-            return;
-        }
-        if (this.albumArtist == null || !this.albumArtist.equals(albumArtist)) {
-            this.albumArtist = albumArtist;
-            albumArtistHasChanged = true;
-        }
-    }
-
-    public void softSetGenre(String genre) {
-        if (genre == null) {
-            return;
-        }
-        if (this.genre == null || !this.genre.equals(genre)) {
-            this.genre = genre;
-            genreHasChanged = true;
-        }
-    }
-
-    public void softSetYear(String year) {
-        if (year == null) {
-            return;
-        }
-        if (this.year == null || !this.year.equals(year)) {
-            this.year = year;
-            yearHasChanged = true;
-        }
-    }
-
-    public void softSetTrack(String track) {
-        if (track == null) {
-            return;
-        }
-        if (this.track == null || !this.track.equals(track)) {
-            this.track = track;
-            trackHasChanged = true;
-        }
-    }
-
-    public void softSetTrackTotal(String trackTotal) {
-        if (trackTotal == null) {
-            return;
-        }
-        if (this.trackTotal == null || !this.trackTotal.equals(trackTotal)) {
-            this.trackTotal = trackTotal;
-            trackTotalHasChanged = true;
-        }
-    }
-
-    public void softSetDisc(String disc) {
-        if (disc == null) {
-            return;
-        }
-        if (this.disc == null || !this.disc.equals(disc)) {
-            this.disc = disc;
-            discHasChanged = true;
-        }
-    }
-
-    public void softSetDiscTotal(String discTotal) {
-        if (discTotal == null) {
-            return;
-        }
-        if (this.discTotal == null || !this.discTotal.equals(discTotal)) {
-            this.discTotal = discTotal;
-            discTotalHasChanged = true;
-        }
-    }
-
-    public void softSetLyrics(String lyrics) {
-        if (lyrics == null) {
-            return;
-        }
-        if (this.lyrics == null || !this.lyrics.equals(lyrics)) {
-            this.lyrics = lyrics;
-            lyricsHasChanged = true;
-        }
-    }
-
-    public void softSetComment(String comment) {
-        if (comment == null) {
-            return;
-        }
-        if (this.comment == null || !this.comment.equals(comment)) {
-            this.comment = comment;
-            commentHasChanged = true;
-        }
+        } catch (UnsupportedOperationException ignored) {}
     }
 
     public boolean hasChanged() {
         return titleHasChanged || albumHasChanged || artistHasChanged ||
-                albumArtistHasChanged || genreHasChanged || yearHasChanged
-                || trackHasChanged || trackTotalHasChanged || discHasChanged
-                || discTotalHasChanged || lyricsHasChanged || commentHasChanged;
+                albumArtistHasChanged || genreHasChanged || yearHasChanged ||
+                trackHasChanged || trackTotalHasChanged || discHasChanged ||
+                discTotalHasChanged || lyricsHasChanged || commentHasChanged;
     }
 
     public void updateTag(Tag tag) {
-        if (tag == null) {
-            return;
+        if (tag == null) return;
+
+        if (titleHasChanged) trySetField(tag, FieldKey.TITLE, title);
+        if (albumHasChanged) trySetField(tag, FieldKey.ALBUM, album);
+        if (artistHasChanged) trySetField(tag, FieldKey.ARTIST, artist);
+        if (albumArtistHasChanged) trySetField(tag, FieldKey.ALBUM_ARTIST, albumArtist);
+        if (genreHasChanged) trySetField(tag, FieldKey.GENRE, genre);
+        if (yearHasChanged) trySetField(tag, FieldKey.YEAR, year);
+        if (trackHasChanged) trySetField(tag, FieldKey.TRACK, track);
+        if (trackTotalHasChanged) trySetField(tag, FieldKey.TRACK_TOTAL, trackTotal);
+        if (discHasChanged) trySetField(tag, FieldKey.DISC_NO, disc);
+        if (discTotalHasChanged) trySetField(tag, FieldKey.DISC_TOTAL, discTotal);
+        if (lyricsHasChanged) trySetField(tag, FieldKey.LYRICS, lyrics);
+        if (commentHasChanged) trySetField(tag, FieldKey.COMMENT, comment);
+    }
+
+    private void trySetField(Tag tag, FieldKey key, String value) {
+        try {
+            tag.setField(key, value);
+        } catch (Exception ignored) {
+            // Failed to set field, skip silently
         }
-        if (titleHasChanged) {
-            try {
-                tag.setField(FieldKey.TITLE, title);
-            } catch (Exception ignored) {
-            }
-        }
-        if (albumHasChanged) {
-            try {
-                tag.setField(FieldKey.ALBUM, album);
-            } catch (Exception ignored) {
-            }
-        }
-        if (artistHasChanged) {
-            try {
-                tag.setField(FieldKey.ARTIST, artist);
-            } catch (Exception ignored) {
-            }
-        }
-        if (albumArtistHasChanged) {
-            try {
-                tag.setField(FieldKey.ALBUM_ARTIST, albumArtist);
-            } catch (Exception ignored) {
-            }
-        }
-        if (genreHasChanged) {
-            try {
-                tag.setField(FieldKey.GENRE, genre);
-            } catch (Exception ignored) {
-            }
-        }
-        if (yearHasChanged) {
-            try {
-                tag.setField(FieldKey.YEAR, year);
-            } catch (Exception ignored) {
-            }
-        }
-        if (trackHasChanged) {
-            try {
-                tag.setField(FieldKey.TRACK, track);
-            } catch (Exception ignored) {
-            }
-        }
-        if (trackTotalHasChanged) {
-            try {
-                tag.setField(FieldKey.TRACK_TOTAL, trackTotal);
-            } catch (Exception ignored) {
-            }
-        }
-        if (discHasChanged) {
-            try {
-                tag.setField(FieldKey.DISC_NO, disc);
-            } catch (Exception ignored) {
-            }
-        }
-        if (discTotalHasChanged) {
-            try {
-                tag.setField(FieldKey.DISC_TOTAL, discTotal);
-            } catch (Exception ignored) {
-            }
-        }
-        if (lyricsHasChanged) {
-            try {
-                tag.setField(FieldKey.LYRICS, lyrics);
-            } catch (Exception ignored) {
-            }
-        }
-        if (commentHasChanged) {
-            try {
-                tag.setField(FieldKey.COMMENT, comment);
-            } catch (Exception ignored) {
-            }
+    }
+
+    public void softSetTitle(String value) { softSet(value, this.title, v -> this.title = v, b -> this.titleHasChanged = b); }
+    public void softSetAlbum(String value) { softSet(value, this.album, v -> this.album = v, b -> this.albumHasChanged = b); }
+    public void softSetArtist(String value) { softSet(value, this.artist, v -> this.artist = v, b -> this.artistHasChanged = b); }
+    public void softSetAlbumArtist(String value) { softSet(value, this.albumArtist, v -> this.albumArtist = v, b -> this.albumArtistHasChanged = b); }
+    public void softSetGenre(String value) { softSet(value, this.genre, v -> this.genre = v, b -> this.genreHasChanged = b); }
+    public void softSetYear(String value) { softSet(value, this.year, v -> this.year = v, b -> this.yearHasChanged = b); }
+    public void softSetTrack(String value) { softSet(value, this.track, v -> this.track = v, b -> this.trackHasChanged = b); }
+    public void softSetTrackTotal(String value) { softSet(value, this.trackTotal, v -> this.trackTotal = v, b -> this.trackTotalHasChanged = b); }
+    public void softSetDisc(String value) { softSet(value, this.disc, v -> this.disc = v, b -> this.discHasChanged = b); }
+    public void softSetDiscTotal(String value) { softSet(value, this.discTotal, v -> this.discTotal = v, b -> this.discTotalHasChanged = b); }
+    public void softSetLyrics(String value) { softSet(value, this.lyrics, v -> this.lyrics = v, b -> this.lyricsHasChanged = b); }
+    public void softSetComment(String value) { softSet(value, this.comment, v -> this.comment = v, b -> this.commentHasChanged = b); }
+
+    private interface ValueSetter { void accept(String value); }
+    private interface FlagSetter { void accept(boolean flag); }
+
+    private void softSet(String newValue, String currentValue, ValueSetter setter, FlagSetter flagSetter) {
+        if (newValue == null) return;
+        if (currentValue == null || !currentValue.equals(newValue)) {
+            setter.accept(newValue);
+            flagSetter.accept(true);
         }
     }
 }

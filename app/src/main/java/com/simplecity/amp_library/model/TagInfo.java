@@ -20,6 +20,8 @@ import org.jaudiotagger.tag.TagException;
  */
 public class TagInfo implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String artistName;
     public String albumArtistName;
     public String albumName;
@@ -39,19 +41,23 @@ public class TagInfo implements Serializable {
             if (file.exists()) {
                 try {
                     AudioFile audioFile = AudioFileIO.read(file);
-                    this.artistName = getTag(audioFile, FieldKey.ARTIST);
-                    this.albumArtistName = getTag(audioFile, FieldKey.ALBUM_ARTIST);
-                    this.albumName = getTag(audioFile, FieldKey.ALBUM);
-                    this.trackName = getTag(audioFile, FieldKey.TITLE);
-                    this.trackNumber = StringUtils.parseInt(getTag(audioFile, FieldKey.TRACK));
-                    this.trackTotal = StringUtils.parseInt(getTag(audioFile, FieldKey.TRACK_TOTAL));
-                    this.discNumber = StringUtils.parseInt(getTag(audioFile, FieldKey.DISC_NO));
-                    this.discTotal = StringUtils.parseInt(getTag(audioFile, FieldKey.DISC_TOTAL));
-                    this.bitrate = getBitrate(audioFile);
-                    this.format = getFormat(audioFile);
-                    this.sampleRate = getSampleRate(audioFile);
-                    this.genre = getTag(audioFile, FieldKey.GENRE);
-                } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
+                    this.artistName        = getTag(audioFile, FieldKey.ARTIST);
+                    this.albumArtistName   = getTag(audioFile, FieldKey.ALBUM_ARTIST);
+                    this.albumName         = getTag(audioFile, FieldKey.ALBUM);
+                    this.trackName         = getTag(audioFile, FieldKey.TITLE);
+                    this.trackNumber       = StringUtils.parseInt(getTag(audioFile, FieldKey.TRACK));
+                    this.trackTotal        = StringUtils.parseInt(getTag(audioFile, FieldKey.TRACK_TOTAL));
+                    this.discNumber        = StringUtils.parseInt(getTag(audioFile, FieldKey.DISC_NO));
+                    this.discTotal         = StringUtils.parseInt(getTag(audioFile, FieldKey.DISC_TOTAL));
+                    this.bitrate           = getBitrate(audioFile);
+                    this.format            = getFormat(audioFile);
+                    this.sampleRate        = getSampleRate(audioFile);
+                    this.genre             = getTag(audioFile, FieldKey.GENRE);
+                } catch (CannotReadException
+                       | IOException
+                       | TagException
+                       | ReadOnlyFileException
+                       | InvalidAudioFrameException e) {
                     e.printStackTrace();
                 }
             }
