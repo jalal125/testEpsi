@@ -116,7 +116,10 @@ public class HttpServer {
 
                 cleanupAudioStream();
                 audioInputStream = new FileInputStream(file);
-                audioInputStream.skip(start);
+                long skipped = audioInputStream.skip(start); // Check how many bytes were actually skipped
+                if (skipped != start) {
+                    Log.w(tag, "Expected to skip " + start + " bytes, but skipped " + skipped + " bytes.");
+                }
                 long contentLength = end - start + 1;
 
                 Response response = newFixedLengthResponse(

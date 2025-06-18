@@ -130,6 +130,8 @@ public class MusicService extends MediaBrowserServiceCompat {
     @Inject
     FavoritesPlaylistManager favoritesPlaylistManager;
 
+    private boolean manuallyPaused = false;
+
     @SuppressLint("InlinedApi")
     @Override
     public void onCreate() {
@@ -287,22 +289,18 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         return true;
     }
-
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        analyticsManager.dropBreadcrumb(TAG, "onTaskRemoved()");
+        analyticsManager.dropBreadcrumb(tag, "onTaskRemoved()");
 
-        // Fixme:
-        //  playbackManager.willResumePlayback() returns true even after we've manually paused.
-        //  This means we don't call stopSelf(), which in turn causes the service to act as if it has crashed, and will recreate itself unnecessarily.
-
-        if (!isPlaying() && !playbackManager.willResumePlayback()) {
-            analyticsManager.dropBreadcrumb(TAG, "stopSelf() called");
+        if (!isPlaying() && (!playbackManager.willResumePlayback() || manuallyPaused)) {
+            analyticsManager.dropBreadcrumb(tag, "stopSelf() called");
             stopSelf();
         }
 
         super.onTaskRemoved(rootIntent);
     }
+
 
     @Override
     public void onDestroy() {

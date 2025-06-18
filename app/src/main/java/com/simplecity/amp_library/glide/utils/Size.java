@@ -6,10 +6,12 @@ public class Size {
     public int height;
 
     public Size(int width, int height) {
-        {
-            this.width = width;
-            this.height = height;
-        }
+        setSize(width, height);
+    }
+
+    private void setSize(int width, int height) {
+        this.width = width;
+        this.height = height;
     }
 
     @Override

@@ -297,6 +297,13 @@ public final class CustomCollapsingTextHelper {
         }
     }
 
+    // Dedicated exception for font family errors
+    public static class FontFamilyReadException extends RuntimeException {
+        public FontFamilyReadException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     private Typeface readFontFamilyTypeface(int resId) {
         final TypedArray a = mView.getContext().obtainStyledAttributes(resId, Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 ? new int[]{android.R.attr.fontFamily}
@@ -307,7 +314,7 @@ public final class CustomCollapsingTextHelper {
                 return Typeface.create(family, Typeface.NORMAL);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Unable to read font family typeface: " + resId);
+            throw new FontFamilyReadException("Unable to read font family typeface: " + resId, e);
         } finally {
             a.recycle();
         }
