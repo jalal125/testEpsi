@@ -33,32 +33,31 @@ public class Song implements
 
     private static final String TAG = "Song";
 
-    public long id;
+    // Fields made non-public with getters
+    private long id;
     private String name;
-    public String artistName;
-    public long artistId;
-    public String albumName;
-    public long albumId;
-    public long duration;
-    public int year;
-    public int dateAdded;
-    public long playlistSongId;
-    public long playlistSongPlayOrder;
-    public int playCount;
-    public long lastPlayed;
-    public long startTime;
+    private String artistName;
+    private long artistId;
+    private String albumName;
+    private long albumId;
+    private long duration;
+    private int year;
+    private int dateAdded;
+    private long playlistSongId;
+    private long playlistSongPlayOrder;
+    private int playCount;
+    private long lastPlayed;
+    private long startTime;
     private long elapsedTime = 0;
     private boolean isPaused;
-    public int track;
-    public int discNumber;
-    public boolean isPodcast;
-    public String path;
-    public long bookMark;
-
-    public String albumArtistName;
+    private int track;
+    private int discNumber;
+    private boolean isPodcast;
+    private String path;
+    private long bookMark;
+    private String albumArtistName;
 
     private TagInfo tagInfo;
-
     private String durationLabel;
     private String bitrateLabel;
     private String sampleRateLabel;
@@ -74,155 +73,205 @@ public class Song implements
 
     public static String[] getProjection() {
         return new String[] {
-                MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST_ID,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.ALBUM_ID,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.YEAR,
-                MediaStore.Audio.Media.TRACK,
-                MediaStore.Audio.Media.DATE_ADDED,
-                MediaStore.Audio.Media.IS_PODCAST,
-                MediaStore.Audio.Media.BOOKMARK,
-                Song.COLUMN_ALBUM_ARTIST
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ARTIST_ID,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.ALBUM_ID,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.YEAR,
+            MediaStore.Audio.Media.TRACK,
+            MediaStore.Audio.Media.DATE_ADDED,
+            MediaStore.Audio.Media.IS_PODCAST,
+            MediaStore.Audio.Media.BOOKMARK,
+            COLUMN_ALBUM_ARTIST
         };
     }
 
     public static Query getQuery() {
         return new Query.Builder()
-                .uri(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
-                .projection(Song.getProjection())
-                .selection(MediaStore.Audio.Media.IS_MUSIC + "=1 OR " + MediaStore.Audio.Media.IS_PODCAST + "=1")
-                .args(null)
-                .sort(MediaStore.Audio.Media.TRACK)
-                .build();
+            .uri(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+            .projection(getProjection())
+            .selection(MediaStore.Audio.Media.IS_MUSIC + "=1 OR " + MediaStore.Audio.Media.IS_PODCAST + "=1")
+            .args(null)
+            .sort(MediaStore.Audio.Media.TRACK)
+            .build();
     }
 
     public Song(Cursor cursor) {
-
         id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
-
         name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-
         artistId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID));
-
         artistName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-
         albumId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
-
         albumName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-
         duration = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-
         year = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.YEAR));
-
         track = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK));
-
         if (track >= 1000) {
             discNumber = track / 1000;
             track = track % 1000;
         }
-
         dateAdded = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED));
-
         path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-
         albumArtistName = artistName;
         if (cursor.getColumnIndex(COLUMN_ALBUM_ARTIST) != -1) {
-            String albumArtist = cursor.getString(cursor.getColumnIndex(COLUMN_ALBUM_ARTIST));
-            if (albumArtist != null) {
-                albumArtistName = albumArtist;
+            String aa = cursor.getString(cursor.getColumnIndex(COLUMN_ALBUM_ARTIST));
+            if (aa != null) {
+                albumArtistName = aa;
             }
         }
-
         isPodcast = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.IS_PODCAST)) == 1;
-
         bookMark = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.BOOKMARK));
-
-        //Populate the artwork key & sort key properties if null.
         setSortKey();
         setArtworkKey();
     }
 
     public Song() {
-
+        // Default constructor
     }
 
-    public Single<Genre> getGenre(Context context) {
-        Query query = Genre.getQuery();
-        query.uri = MediaStore.Audio.Genres.getContentUriForAudioId("external", (int) id);
-        return SqlBriteUtils.createSingle(context, Genre::new, query, null);
+    // Field accessors
+
+    public long getId() {
+        return id;
     }
 
-    public int getPlayCount(Context context) {
+    public String getName() {
+        return name;
+    }
 
-        int playCount = 0;
+    public String getArtistName() {
+        return artistName;
+    }
 
-        Uri playCountUri = PlayCountTable.URI;
-        Uri appendedUri = ContentUris.withAppendedId(playCountUri, id);
+    public long getArtistId() {
+        return artistId;
+    }
 
-        if (appendedUri != null) {
+    public String getAlbumName() {
+        return albumName;
+    }
 
-            Query query = new Query.Builder()
-                    .uri(appendedUri)
-                    .projection(new String[] { PlayCountTable.COLUMN_ID, PlayCountTable.COLUMN_PLAY_COUNT })
-                    .build();
+    public long getAlbumId() {
+        return albumId;
+    }
 
-            playCount = SqlUtils.createSingleQuery(context, cursor ->
-                    cursor.getInt(cursor.getColumnIndex(PlayCountTable.COLUMN_PLAY_COUNT)), 0, query);
-        }
+    public long getDuration() {
+        return duration;
+    }
 
+    public int getYear() {
+        return year;
+    }
+
+    public int getDateAdded() {
+        return dateAdded;
+    }
+
+    public long getPlaylistSongId() {
+        return playlistSongId;
+    }
+
+    public long getPlaylistSongPlayOrder() {
+        return playlistSongPlayOrder;
+    }
+
+    public int getPlayCount() {
         return playCount;
     }
+
+    public long getLastPlayed() {
+        return lastPlayed;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public int getTrack() {
+        return track;
+    }
+
+    public int getDiscNumber() {
+        return discNumber;
+    }
+
+    public boolean isPodcast() {
+        return isPodcast;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public long getBookMark() {
+        return bookMark;
+    }
+
+    public String getAlbumArtistName() {
+        return albumArtistName;
+    }
+
+    // Async genre lookup
+
+    public Single<Genre> fetchGenre(Context context) {
+        Query q = Genre.getQuery();
+        q.uri = MediaStore.Audio.Genres.getContentUriForAudioId("external", (int) id);
+        return SqlBriteUtils.createSingle(context, Genre::new, q, null);
+    }
+
+    // Database play count lookup (renamed to avoid overload conflict)
+    public int fetchPlayCount(Context context) {
+        Uri base = PlayCountTable.URI;
+        Uri uri = ContentUris.withAppendedId(base, id);
+        if (uri == null) return 0;
+        Query q = new Query.Builder()
+            .uri(uri)
+            .projection(new String[]{PlayCountTable.COLUMN_ID, PlayCountTable.COLUMN_PLAY_COUNT})
+            .build();
+        return SqlUtils.createSingleQuery(
+            context,
+            c -> c.getInt(c.getColumnIndex(PlayCountTable.COLUMN_PLAY_COUNT)),
+            0,
+            q
+        );
+    }
+
+    // Playback position helpers
 
     public void setStartTime() {
         startTime = System.currentTimeMillis();
     }
 
-    /**
-     * Checks whether this track has been played for at least 75% of it's duration
-     *
-     * @return true if the elapsed time is > 75% of the duration false otherwise
-     */
     public boolean hasPlayed() {
-        return getElapsedTime() != 0 && ((float) getElapsedTime() / (float) duration) > 0.75f;
+        return getElapsedTime() != 0
+            && ((float) getElapsedTime() / (float) duration) > 0.75f;
     }
 
-    /**
-     * Sets this track as 'paused' to make sure the elapsed time doesn't continue to increase
-     */
     public void setPaused() {
-        elapsedTime = elapsedTime + System.currentTimeMillis() - startTime;
+        elapsedTime += System.currentTimeMillis() - startTime;
         isPaused = true;
     }
 
-    /**
-     * Sets this track as 'resumed' to resume incrementing the elapsed time
-     */
     public void setResumed() {
         startTime = System.currentTimeMillis();
         isPaused = false;
     }
 
-    /**
-     * Gets the elapsed time of this track (in millis)
-     *
-     * @return the elapsed time of this track (in millis)
-     */
     private long getElapsedTime() {
-        if (isPaused) {
-            return elapsedTime;
-        } else {
-            return elapsedTime + System.currentTimeMillis() - startTime;
-        }
+        return isPaused
+            ? elapsedTime
+            : elapsedTime + System.currentTimeMillis() - startTime;
     }
 
-    public String getDurationLabel(Context context) {
+    // Metadata labels
+
+    public String getDurationLabel(Context ctx) {
         if (durationLabel == null) {
-            durationLabel = StringUtils.makeTimeString(context, duration / 1000);
+            durationLabel = StringUtils.makeTimeString(ctx, duration / 1000);
         }
         return durationLabel;
     }
@@ -234,21 +283,19 @@ public class Song implements
         return tagInfo;
     }
 
-    public String getBitrateLabel(Context context) {
+    public String getBitrateLabel(Context ctx) {
         if (bitrateLabel == null) {
-            bitrateLabel = getTagInfo().bitrate + context.getString(R.string.song_info_bitrate_suffix);
+            bitrateLabel = getTagInfo().bitrate + ctx.getString(R.string.song_info_bitrate_suffix);
         }
         return bitrateLabel;
     }
 
-    public String getSampleRateLabel(Context context) {
+    public String getSampleRateLabel(Context ctx) {
         if (sampleRateLabel == null) {
-            int sampleRate = getTagInfo().sampleRate;
-            if (sampleRate == -1) {
-                sampleRateLabel = "Unknown";
-                return sampleRateLabel;
-            }
-            sampleRateLabel = ((float) sampleRate) / 1000 + context.getString(R.string.song_info_sample_rate_suffix);
+            int sr = getTagInfo().sampleRate;
+            sampleRateLabel = (sr == -1)
+                ? "Unknown"
+                : ((float) sr / 1000) + ctx.getString(R.string.song_info_sample_rate_suffix);
         }
         return sampleRateLabel;
     }
@@ -262,80 +309,60 @@ public class Song implements
 
     public String getTrackNumberLabel() {
         if (trackNumberLabel == null) {
-            if (track == -1) {
-                trackNumberLabel = String.valueOf(getTagInfo().trackNumber);
-            } else {
-                trackNumberLabel = String.valueOf(track);
-            }
+            trackNumberLabel = (track == -1)
+                ? String.valueOf(getTagInfo().trackNumber)
+                : String.valueOf(track);
         }
         return trackNumberLabel;
     }
 
     public String getDiscNumberLabel() {
         if (discNumberLabel == null) {
-            if (discNumber == -1) {
-                discNumberLabel = String.valueOf(getTagInfo().discNumber);
-            } else {
-                discNumberLabel = String.valueOf(discNumber);
-            }
+            discNumberLabel = (discNumber == -1)
+                ? String.valueOf(getTagInfo().discNumber)
+                : String.valueOf(discNumber);
         }
         return discNumberLabel;
     }
 
     public String getFileSizeLabel() {
         if (fileSizeLabel == null && !TextUtils.isEmpty(path)) {
-            File file = new File(path);
-            fileSizeLabel = FileHelper.getHumanReadableSize(file.length());
+            File f = new File(path);
+            fileSizeLabel = FileHelper.getHumanReadableSize(f.length());
         }
         return fileSizeLabel;
     }
 
+    // Album and album-artist builders
+
     public Album getAlbum() {
         return new Album.Builder()
-                .id(albumId)
-                .name(albumName)
-                .addArtist(new Artist(artistId, artistName))
-                .albumArtist(albumArtistName)
-                .year(year)
-                .numSongs(1)
-                .numDiscs(discNumber)
-                .lastPlayed(lastPlayed)
-                .dateAdded(dateAdded)
-                .path(path)
-                .songPlayCount(playCount)
-                .build();
+            .id(albumId)
+            .name(albumName)
+            .addArtist(new Artist(artistId, artistName))
+            .albumArtist(albumArtistName)
+            .year(year)
+            .numSongs(1)
+            .numDiscs(discNumber)
+            .lastPlayed(lastPlayed)
+            .dateAdded(dateAdded)
+            .path(path)
+            .songPlayCount(playCount)
+            .build();
     }
 
     public AlbumArtist getAlbumArtist() {
         return new AlbumArtist.Builder()
-                .name(albumArtistName)
-                .album(getAlbum())
-                .build();
+            .name(albumArtistName)
+            .album(getAlbum())
+            .build();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Song song = (Song) o;
-
-        return id == song.id && artistId == song.artistId && albumId == song.albumId;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (int) (artistId ^ (artistId >>> 32));
-        result = 31 * result + (int) (albumId ^ (albumId >>> 32));
-        return result;
-    }
+    // Sorting and artwork
 
     @Override
     public String getSortKey() {
-        if (sortKey == null) {
-            setSortKey();
-        }
+        if (sortKey == null) setSortKey();
         return sortKey;
     }
 
@@ -360,16 +387,16 @@ public class Song implements
     public String getRemoteArtworkUrl() {
         try {
             return "https://artwork.shuttlemusicplayer.app/api/v1/artwork"
-                    + "?artist=" + URLEncoder.encode(albumArtistName, Charset.forName("UTF-8").name())
-                    + "&album=" + URLEncoder.encode(albumName, Charset.forName("UTF-8").name());
+                + "?artist=" + URLEncoder.encode(albumArtistName, Charset.forName("UTF-8").name())
+                + "&album="  + URLEncoder.encode(albumName, Charset.forName("UTF-8").name());
         } catch (UnsupportedEncodingException e) {
             return null;
         }
     }
 
     @Override
-    public InputStream getMediaStoreArtwork(Context context) {
-        return ArtworkUtils.getMediaStoreArtwork(context, this);
+    public InputStream getMediaStoreArtwork(Context ctx) {
+        return ArtworkUtils.getMediaStoreArtwork(ctx, this);
     }
 
     @Override
@@ -387,18 +414,37 @@ public class Song implements
         return ArtworkUtils.getAllFolderArtwork(path);
     }
 
+    // equals / hashCode / toString / compareTo
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Song)) return false;
+        Song other = (Song) o;
+        return id == other.id
+            && artistId == other.artistId
+            && albumId == other.albumId;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (int) (artistId ^ (artistId >>> 32));
+        result = 31 * result + (int) (albumId ^ (albumId >>> 32));
+        return result;
+    }
+
     @Override
     public String toString() {
         return "\nSong{" +
-                "\nid='" + id +
-                "\nname='" + name +
-                "\nalbumArtistName='" + albumArtistName +
-                '}';
+               "\nid=" + id +
+               "\nname='" + name + '\'' +
+               "\nalbumArtistName='" + albumArtistName + '\'' +
+               '}';
     }
 
-    @Nullable
     @Override
-    public int compareTo(@NonNull Song song) {
-        return ComparisonUtils.compare(getSortKey(), song.getSortKey());
+    public int compareTo(@NonNull Song other) {
+        return ComparisonUtils.compare(getSortKey(), other.getSortKey());
     }
 }

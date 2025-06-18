@@ -22,100 +22,108 @@ public class SettingsManager extends BaseSettingsManager {
         super(sharedPreferences);
     }
 
-    // Support
-    private static String KEY_PREF_CHANGELOG = "pref_changelog";
-    public static String KEY_PREF_FAQ = "pref_faq";
-    public static String KEY_PREF_HELP = "pref_help";
-    public static String KEY_PREF_RATE = "pref_rate";
-    public static String KEY_PREF_RESTORE_PURCHASES = "pref_restore_purchases";
+    // Support keys
+    private static final String keyPrefChangelog           = "pref_changelog";
+    private static final String keyPrefFaq                 = "pref_faq";
+    private static final String keyPrefHelp                = "pref_help";
+    private static final String keyPrefRate                = "pref_rate";
+    private static final String keyPrefRestorePurchases    = "pref_restore_purchases";
 
-    // Display
-    public static String KEY_PREF_TAB_CHOOSER = "pref_tab_chooser";
-    public static String KEY_PREF_DEFAULT_PAGE = "pref_default_page";
-    public static String KEY_DISPLAY_REMAINING_TIME = "pref_display_remaining_time";
+    // Display keys
+    private static final String keyPrefTabChooser          = "pref_tab_chooser";
+    private static final String keyPrefDefaultPage         = "pref_default_page";
+    private static final String keyDisplayRemainingTime    = "pref_display_remaining_time";
 
-    // Themes
-    public static String KEY_PREF_THEME_BASE = "pref_theme_base";
-    public static String KEY_PREF_PRIMARY_COLOR = "pref_theme_primary_color";
-    public static String KEY_PREF_ACCENT_COLOR = "pref_theme_accent_color";
-    public static String KEY_PREF_NAV_BAR = "pref_nav_bar";
-    public static String KEY_PREF_PALETTE = "pref_theme_use_palette";
-    public static String KEY_PREF_PALETTE_NOW_PLAYING_ONLY = "pref_theme_use_palette_now_playing";
+    // Theme keys
+    private static final String keyPrefThemeBase                   = "pref_theme_base";
+    private static final String keyPrefPrimaryColor               = "pref_theme_primary_color";
+    private static final String keyPrefAccentColor                = "pref_theme_accent_color";
+    private static final String keyPrefNavBar                     = "pref_nav_bar";
+    private static final String keyPrefPalette                    = "pref_theme_use_palette";
+    private static final String keyPrefPaletteNowPlayingOnly      = "pref_theme_use_palette_now_playing";
 
-    // Artwork
-    public static String KEY_PREF_DOWNLOAD_ARTWORK = "pref_download_artwork";
-    public static String KEY_PREF_DELETE_ARTWORK = "pref_delete_artwork";
+    // Artwork keys
+    private static final String keyPrefDownloadArtwork    = "pref_download_artwork";
+    private static final String keyPrefDeleteArtwork      = "pref_delete_artwork";
 
     // Scrobbler
-    public static String KEY_PREF_DOWNLOAD_SCROBBLER = "pref_download_simple_lastfm_scrobbler";
+    private static final String keyPrefDownloadScrobbler = "pref_download_simple_lastfm_scrobbler";
 
-    // Blacklist/whitelist
-    public static String KEY_PREF_BLACKLIST = "pref_blacklist_view";
-    public static String KEY_PREF_WHITELIST = "pref_whitelist_view";
+    // Blacklist/Whitelist
+    private static final String keyPrefBlacklist         = "pref_blacklist_view";
+    private static final String keyPrefWhitelist         = "pref_whitelist_view";
 
     // Playback
-    public static String KEY_PREF_REMEMBER_SHUFFLE = "pref_remember_shuffle";
+    private static final String keyPrefRememberShuffle   = "pref_remember_shuffle";
 
     // Upgrade
-    public static String KEY_PREF_UPGRADE = "pref_upgrade";
+    private static final String keyPrefUpgrade           = "pref_upgrade";
 
-    // Whether the 'rate' snackbar has been seen during this session
-    public boolean hasSeenRateSnackbar = false;
+    // Session flags
+    private boolean hasSeenRateSnackbar = false;
 
-    // Whether to display artwork in the songs list
+    // Lockscreen artwork
     public static final String KEY_SHOW_LOCKSCREEN_ARTWORK = "pref_show_lockscreen_artwork";
 
     public boolean showLockscreenArtwork() {
         return getBool(KEY_SHOW_LOCKSCREEN_ARTWORK, true);
     }
 
-    private static final String KEY_KEEP_SCREEN_ON = "pref_screen_on";
+    // Keep screen on
+    private static final String keyKeepScreenOn = "pref_screen_on";
 
     public boolean keepScreenOn() {
-        return getBool(KEY_KEEP_SCREEN_ON, false);
+        return getBool(keyKeepScreenOn, false);
     }
 
+    // Display remaining time
     public boolean displayRemainingTime() {
-        return getBool(KEY_DISPLAY_REMAINING_TIME, true);
+        return getBool(keyDisplayRemainingTime, true);
     }
 
-    private static final String KEY_ALBUM_DISPLAY_TYPE = "album_display_type_new";
+    // Album display type
+    private static final String keyAlbumDisplayType = "album_display_type_new";
 
     public void setAlbumDisplayType(int type) {
-        setInt(KEY_ALBUM_DISPLAY_TYPE, type);
+        setInt(keyAlbumDisplayType, type);
     }
 
     @ViewType
     public int getAlbumDisplayType(Context context) {
-        return getInt(KEY_ALBUM_DISPLAY_TYPE, ShuttleUtils.isTablet(context) ? ViewType.ALBUM_PALETTE : ViewType.ALBUM_LIST);
+        int def = ShuttleUtils.isTablet(context)
+            ? ViewType.ALBUM_PALETTE
+            : ViewType.ALBUM_LIST;
+        return getInt(keyAlbumDisplayType, def);
     }
 
-    private static final String KEY_ARTIST_DISPLAY_TYPE = "artist_display_type_new";
+    // Artist display type
+    private static final String keyArtistDisplayType = "artist_display_type_new";
 
     public void setArtistDisplayType(int type) {
-        setInt(KEY_ARTIST_DISPLAY_TYPE, type);
+        setInt(keyArtistDisplayType, type);
     }
 
     @ViewType
     public int getArtistDisplayType() {
-        return getInt(KEY_ARTIST_DISPLAY_TYPE, ViewType.ARTIST_PALETTE);
+        return getInt(keyArtistDisplayType, ViewType.ARTIST_PALETTE);
     }
 
-    private static final String KEY_ARTIST_COLUMN_COUNT = "artist_column_count";
-    private static final String KEY_ARTIST_COLUMN_COUNT_LAND = "artist_column_count_land";
-    private static final String KEY_ARTIST_COLUMN_COUNT_TABLET = "artist_column_count_tablet";
-    private static final String KEY_ARTIST_COLUMN_COUNT_TABLET_LAND = "artist_column_count_tablet_land";
+    // Artist column counts
+    private static final String keyArtistColumnCount            = "artist_column_count";
+    private static final String keyArtistColumnCountLand        = "artist_column_count_land";
+    private static final String keyArtistColumnCountTablet      = "artist_column_count_tablet";
+    private static final String keyArtistColumnCountTabletLand  = "artist_column_count_tablet_land";
 
     private String getArtistColumnCountKey(Context context) {
-        String key = KEY_ARTIST_COLUMN_COUNT;
-
         if (ShuttleUtils.isLandscape(context)) {
-            key = ShuttleUtils.isTablet(context) ? KEY_ARTIST_COLUMN_COUNT_TABLET_LAND : KEY_ARTIST_COLUMN_COUNT_LAND;
-        } else {
-            if (ShuttleUtils.isTablet(context)) key = KEY_ARTIST_COLUMN_COUNT_TABLET;
+            return ShuttleUtils.isTablet(context)
+                ? keyArtistColumnCountTabletLand
+                : keyArtistColumnCountLand;
         }
-
-        return key;
+        if (ShuttleUtils.isTablet(context)) {
+            return keyArtistColumnCountTablet;
+        }
+        return keyArtistColumnCount;
     }
 
     public void setArtistColumnCount(Context context, int count) {
@@ -123,30 +131,32 @@ public class SettingsManager extends BaseSettingsManager {
     }
 
     public int getArtistColumnCount(Context context) {
-        int artistDisplayType = getArtistDisplayType();
-        int defaultSpanCount =
-                artistDisplayType == ViewType.ARTIST_LIST ? context.getResources().getInteger(R.integer.list_num_columns) : context.getResources().getInteger(R.integer.grid_num_columns);
-        if (artistDisplayType == ViewType.ARTIST_LIST && defaultSpanCount == 1) {
+        int display = getArtistDisplayType();
+        int defaultSpan = display == ViewType.ARTIST_LIST
+            ? context.getResources().getInteger(R.integer.list_num_columns)
+            : context.getResources().getInteger(R.integer.grid_num_columns);
+        if (display == ViewType.ARTIST_LIST && defaultSpan == 1) {
             return 1;
         }
-        return getInt(getArtistColumnCountKey(context), defaultSpanCount);
+        return getInt(getArtistColumnCountKey(context), defaultSpan);
     }
 
-    private static final String KEY_ALBUM_COLUMN_COUNT = "album_column_count";
-    private static final String KEY_ALBUM_COLUMN_COUNT_LAND = "album_column_count_land";
-    private static final String KEY_ALBUM_COLUMN_COUNT_TABLET = "album_column_count_tablet";
-    private static final String KEY_ALBUM_COLUMN_COUNT_TABLET_LAND = "album_column_count_tablet_land";
+    // Album column counts
+    private static final String keyAlbumColumnCount            = "album_column_count";
+    private static final String keyAlbumColumnCountLand        = "album_column_count_land";
+    private static final String keyAlbumColumnCountTablet      = "album_column_count_tablet";
+    private static final String keyAlbumColumnCountTabletLand  = "album_column_count_tablet_land";
 
     private String getAlbumColumnCountKey(Context context) {
-        String key = KEY_ALBUM_COLUMN_COUNT;
-
         if (ShuttleUtils.isLandscape(context)) {
-            key = ShuttleUtils.isTablet(context) ? KEY_ALBUM_COLUMN_COUNT_TABLET_LAND : KEY_ALBUM_COLUMN_COUNT_LAND;
-        } else {
-            if (ShuttleUtils.isTablet(context)) key = KEY_ALBUM_COLUMN_COUNT_TABLET;
+            return ShuttleUtils.isTablet(context)
+                ? keyAlbumColumnCountTabletLand
+                : keyAlbumColumnCountLand;
         }
-
-        return key;
+        if (ShuttleUtils.isTablet(context)) {
+            return keyAlbumColumnCountTablet;
+        }
+        return keyAlbumColumnCount;
     }
 
     public void setAlbumColumnCount(Context context, int count) {
@@ -154,326 +164,320 @@ public class SettingsManager extends BaseSettingsManager {
     }
 
     public int getAlbumColumnCount(Context context) {
-        int albumDisplayType = getAlbumDisplayType(context);
-        int defaultSpanCount = albumDisplayType == ViewType.ALBUM_LIST ? context.getResources().getInteger(R.integer.list_num_columns) : context.getResources().getInteger(R.integer.grid_num_columns);
-        if (albumDisplayType == ViewType.ALBUM_LIST && defaultSpanCount == 1) {
+        int display = getAlbumDisplayType(context);
+        int defaultSpan = display == ViewType.ALBUM_LIST
+            ? context.getResources().getInteger(R.integer.list_num_columns)
+            : context.getResources().getInteger(R.integer.grid_num_columns);
+        if (display == ViewType.ALBUM_LIST && defaultSpan == 1) {
             return 1;
         }
-        return getInt(getAlbumColumnCountKey(context), defaultSpanCount);
+        return getInt(getAlbumColumnCountKey(context), defaultSpan);
     }
 
+    // Equalizer
     public boolean getEqualizerEnabled() {
         return getBool("audiofx.global.enable", false);
     }
 
-    private static final String DOCUMENT_TREE_URI = "document_tree_uri";
+    // Document tree
+    private static final String keyDocumentTreeUri = "document_tree_uri";
 
-    public void setDocumentTreeUri(String documentTreeUri) {
-        setString(DOCUMENT_TREE_URI, documentTreeUri);
+    public void setDocumentTreeUri(String uri) {
+        setString(keyDocumentTreeUri, uri);
     }
 
     @Nullable
     public String getDocumentTreeUri() {
-        return getString(DOCUMENT_TREE_URI);
+        return getString(keyDocumentTreeUri);
     }
 
-    private static final String KEY_FOLDER_BROWSER_INITIAL_DIR = "folder_browser_initial_dir";
+    // Folder browser
+    private static final String keyFolderBrowserInitialDir       = "folder_browser_initial_dir";
+    private static final String keyFolderBrowserFilesSortOrder   = "folder_browser_files_sort_order";
+    private static final String keyFolderBrowserFilesAscending   = "folder_browser_files_ascending";
+    private static final String keyFolderBrowserFoldersSortOrder = "folder_browser_folders_sort_order";
+    private static final String keyFolderBrowserFoldersAscending = "folder_browser_folders_ascending";
+    private static final String keyFolderBrowserShowFileNames    = "folder_browser_show_file_names";
 
     public void setFolderBrowserInitialDir(String dir) {
-        setString(KEY_FOLDER_BROWSER_INITIAL_DIR, dir);
+        setString(keyFolderBrowserInitialDir, dir);
     }
 
     public String getFolderBrowserInitialDir() {
-        return getString(KEY_FOLDER_BROWSER_INITIAL_DIR, "");
+        return getString(keyFolderBrowserInitialDir, "");
     }
 
-    private static final String KEY_FOLDER_BROWSER_FILES_SORT_ORDER = "folder_browser_files_sort_order";
-
-    public void setFolderBrowserFilesSortOrder(String sortOrder) {
-        setString(KEY_FOLDER_BROWSER_FILES_SORT_ORDER, sortOrder);
+    public void setFolderBrowserFilesSortOrder(String order) {
+        setString(keyFolderBrowserFilesSortOrder, order);
     }
 
     public String getFolderBrowserFilesSortOrder() {
-        return getString(KEY_FOLDER_BROWSER_FILES_SORT_ORDER, SortManager.SortFiles.DEFAULT);
+        return getString(keyFolderBrowserFilesSortOrder, SortManager.SortFiles.DEFAULT);
     }
 
-    private static final String KEY_FOLDER_BROWSER_FILES_ASCENDING = "folder_browser_files_ascending";
-
-    public void setFolderBrowserFilesAscending(boolean ascending) {
-        setBool(KEY_FOLDER_BROWSER_FILES_ASCENDING, ascending);
+    public void setFolderBrowserFilesAscending(boolean asc) {
+        setBool(keyFolderBrowserFilesAscending, asc);
     }
 
     public boolean getFolderBrowserFilesAscending() {
-        return getBool(KEY_FOLDER_BROWSER_FILES_ASCENDING, true);
+        return getBool(keyFolderBrowserFilesAscending, true);
     }
 
-    private static final String KEY_FOLDER_BROWSER_FOLDERS_SORT_ORDER = "folder_browser_folders_sort_order";
-
-    public void setFolderBrowserFoldersSortOrder(String sortOrder) {
-        setString(KEY_FOLDER_BROWSER_FOLDERS_SORT_ORDER, sortOrder);
+    public void setFolderBrowserFoldersSortOrder(String order) {
+        setString(keyFolderBrowserFoldersSortOrder, order);
     }
 
     public String getFolderBrowserFoldersSortOrder() {
-        return getString(KEY_FOLDER_BROWSER_FOLDERS_SORT_ORDER, SortManager.SortFolders.DEFAULT);
+        return getString(keyFolderBrowserFoldersSortOrder, SortManager.SortFolders.DEFAULT);
     }
 
-    private static final String KEY_FOLDER_BROWSER_FOLDERS_ASCENDING = "folder_browser_folders_ascending";
-
-    public void setFolderBrowserFoldersAscending(boolean ascending) {
-        setBool(KEY_FOLDER_BROWSER_FOLDERS_ASCENDING, ascending);
+    public void setFolderBrowserFoldersAscending(boolean asc) {
+        setBool(keyFolderBrowserFoldersAscending, asc);
     }
 
     public boolean getFolderBrowserFoldersAscending() {
-        return getBool(KEY_FOLDER_BROWSER_FOLDERS_ASCENDING, true);
+        return getBool(keyFolderBrowserFoldersAscending, true);
     }
 
-    private static final String KEY_FOLDER_BROWSER_SHOW_FILENAMES = "folder_browser_show_file_names";
-
-    public void setFolderBrowserShowFileNames(boolean showFileNames) {
-        setBool(KEY_FOLDER_BROWSER_SHOW_FILENAMES, showFileNames);
+    public void setFolderBrowserShowFileNames(boolean show) {
+        setBool(keyFolderBrowserShowFileNames, show);
     }
 
     public boolean getFolderBrowserShowFileNames() {
-        return getBool(KEY_FOLDER_BROWSER_SHOW_FILENAMES, false);
+        return getBool(keyFolderBrowserShowFileNames, false);
     }
 
-    private static final String KEY_LAUNCH_COUNT = "launch_count";
+    // Launch count
+    private static final String keyLaunchCount = "launch_count";
 
     public void incrementLaunchCount() {
-        setInt(KEY_LAUNCH_COUNT, getLaunchCount() + 1);
+        setInt(keyLaunchCount, getLaunchCount() + 1);
     }
 
     public int getLaunchCount() {
-        return getInt(KEY_LAUNCH_COUNT, 0);
+        return getInt(keyLaunchCount, 0);
     }
 
-    private static final String KEY_NAG_MESSAGE_READ = "nag_message_read";
+    // Nag message
+    private static final String keyNagMessageRead = "nag_message_read";
 
     public void setNagMessageRead() {
-        setBool(KEY_NAG_MESSAGE_READ, true);
+        setBool(keyNagMessageRead, true);
     }
 
     public boolean getNagMessageRead() {
-        return getBool(KEY_NAG_MESSAGE_READ, false);
+        return getBool(keyNagMessageRead, false);
     }
 
-    private static final String KEY_HAS_RATED = "has_rated";
+    // Has rated
+    private static final String keyHasRated = "has_rated";
 
     public void setHasRated() {
-        setBool(KEY_HAS_RATED, true);
+        setBool(keyHasRated, true);
     }
 
     public boolean getHasRated() {
-        return getBool(KEY_HAS_RATED, false);
+        return getBool(keyHasRated, false);
     }
 
-    private static final String KEY_BLUETOOTH_PAUSE_DISCONNECT = "pref_bluetooth_disconnect";
-    private static final String KEY_BLUETOOTH_RESUME_CONNECT = "pref_bluetooth_connect";
+    // Bluetooth
+    private static final String keyBluetoothPauseDisconnect = "pref_bluetooth_disconnect";
+    private static final String keyBluetoothResumeConnect   = "pref_bluetooth_connect";
 
     public boolean getBluetoothPauseDisconnect() {
-        return getBool(KEY_BLUETOOTH_PAUSE_DISCONNECT, true);
+        return getBool(keyBluetoothPauseDisconnect, true);
     }
 
     public boolean getBluetoothResumeConnect() {
-        return getBool(KEY_BLUETOOTH_RESUME_CONNECT, false);
+        return getBool(keyBluetoothResumeConnect, false);
     }
 
     // Themes
-
     public boolean getUsePalette() {
-        return getBool(KEY_PREF_PALETTE, true);
+        return getBool(keyPrefPalette, true);
     }
 
     public boolean getUsePaletteNowPlayingOnly() {
-        return getBool(KEY_PREF_PALETTE_NOW_PLAYING_ONLY, false);
+        return getBool(keyPrefPaletteNowPlayingOnly, false);
     }
 
     public boolean getTintNavBar() {
-        return getBool(KEY_PREF_NAV_BAR, false);
+        return getBool(keyPrefNavBar, false);
     }
 
     public void storePrimaryColor(int color) {
-        setInt(KEY_PREF_PRIMARY_COLOR, color);
+        setInt(keyPrefPrimaryColor, color);
     }
 
     public int getPrimaryColor() {
-        return getInt(KEY_PREF_PRIMARY_COLOR, -1);
+        return getInt(keyPrefPrimaryColor, -1);
     }
 
     public void storeAccentColor(int color) {
-        setInt(KEY_PREF_ACCENT_COLOR, color);
+        setInt(keyPrefAccentColor, color);
     }
 
     public int getAccentColor() {
-        return getInt(KEY_PREF_ACCENT_COLOR, -1);
+        return getInt(keyPrefAccentColor, -1);
     }
 
-    // Artwork
-
-    private static final String KEY_DOWNLOAD_AUTOMATICALLY = "pref_download_artwork_auto";
-    private static final String KEY_USE_GMAIL_PLACEHOLDERS = "pref_placeholders";
-    private static final String KEY_QUEUE_ARTWORK = "pref_artwork_queue";
-    private static final String KEY_QUEUE_SWIPE_LOCKED = "pref_lock_queue";
-    private static final String KEY_SONG_LIST_ARTWORK = "pref_artwork_song_list";
-    private static final String KEY_CROP_ARTWORK = "pref_crop_artwork";
-    public static final String KEY_IGNORE_MEDIASTORE_ART = "pref_ignore_mediastore_artwork";
-    public static final String KEY_IGNORE_EMBEDDED_ARTWORK = "pref_ignore_embedded_artwork";
-    public static final String KEY_IGNORE_FOLDER_ARTWORK = "pref_ignore_folder_artwork";
-    public static final String KEY_PREFER_EMBEDDED_ARTWORK = "pref_prefer_embedded";
-
-    public boolean canDownloadArtworkAutomatically() {
-        return getBool(KEY_DOWNLOAD_AUTOMATICALLY, false);
+    // Artwork download
+    public boolean canDownloadArtwork() {
+        return getBool(keyPrefDownloadArtwork, false);
     }
 
-    public boolean preferEmbeddedArtwork() {
-        return getBool(KEY_PREFER_EMBEDDED_ARTWORK, false);
+    public boolean canDeleteArtwork() {
+        return getBool(keyPrefDeleteArtwork, false);
     }
 
-    public boolean useGmailPlaceholders() {
-        return getBool(KEY_USE_GMAIL_PLACEHOLDERS, false);
+    // Scrobbler
+    public boolean canDownloadScrobbler() {
+        return getBool(keyPrefDownloadScrobbler, false);
     }
 
-    public boolean showArtworkInQueue() {
-        return getBool(KEY_QUEUE_ARTWORK, true);
-    }
-
-    public boolean queueSwipeLocked() {
-        return getBool(KEY_QUEUE_SWIPE_LOCKED, false);
-    }
-
-    public void setQueueSwipeLocked(boolean locked) {
-        setBool(KEY_QUEUE_SWIPE_LOCKED, locked);
-    }
-
-    public boolean cropArtwork() {
-        return getBool(KEY_CROP_ARTWORK, false);
-    }
-
-    public boolean ignoreMediaStoreArtwork() {
-        return getBool(KEY_IGNORE_MEDIASTORE_ART, false);
-    }
-
-    public boolean ignoreFolderArtwork() {
-        return getBool(KEY_IGNORE_FOLDER_ARTWORK, false);
-    }
-
-    public boolean ignoreEmbeddedArtwork() {
-        return getBool(KEY_IGNORE_EMBEDDED_ARTWORK, false);
-    }
-
-    private static final String KEY_PLAYLIST_IGNORE_DUPLICATES = "pref_ignore_duplicates";
+    // Ignore duplicates in playlists
+    private static final String keyPlaylistIgnoreDuplicates = "pref_ignore_duplicates";
 
     public boolean ignoreDuplicates() {
-        return getBool(KEY_PLAYLIST_IGNORE_DUPLICATES, false);
+        return getBool(keyPlaylistIgnoreDuplicates, false);
     }
 
-    public void setIgnoreDuplicates(boolean ignoreDuplicates) {
-        setBool(KEY_PLAYLIST_IGNORE_DUPLICATES, ignoreDuplicates);
+    public void setIgnoreDuplicates(boolean ignore) {
+        setBool(keyPlaylistIgnoreDuplicates, ignore);
     }
 
     // Search settings
-
-    private static final String KEY_SEARCH_FUZZY = "search_fuzzy";
+    private static final String keySearchFuzzy   = "search_fuzzy";
+    private static final String keySearchArtists = "search_artists";
+    private static final String keySearchAlbums  = "search_albums";
 
     public void setSearchFuzzy(boolean fuzzy) {
-        setBool(KEY_SEARCH_FUZZY, fuzzy);
+        setBool(keySearchFuzzy, fuzzy);
     }
 
     public boolean getSearchFuzzy() {
-        return getBool(KEY_SEARCH_FUZZY, true);
+        return getBool(keySearchFuzzy, true);
     }
 
-    private static final String KEY_SEARCH_ARTISTS = "search_artists";
-
-    public void setSearchArtists(boolean searchArtists) {
-        setBool(KEY_SEARCH_ARTISTS, searchArtists);
+    public void setSearchArtists(boolean artists) {
+        setBool(keySearchArtists, artists);
     }
 
     public boolean getSearchArtists() {
-        return getBool(KEY_SEARCH_ARTISTS, true);
+        return getBool(keySearchArtists, true);
     }
 
-    private static final String KEY_SEARCH_ALBUMS = "search_albums";
-
-    public void setSearchAlbums(boolean searchAlbums) {
-        setBool(KEY_SEARCH_ALBUMS, searchAlbums);
+    public void setSearchAlbums(boolean albums) {
+        setBool(keySearchAlbums, albums);
     }
 
     public boolean getSearchAlbums() {
-        return getBool(KEY_SEARCH_ALBUMS, true);
+        return getBool(keySearchAlbums, true);
     }
 
     // Changelog
-
-    private static final String KEY_VERSION_CODE = "version_code";
+    private static final String keyVersionCode          = "version_code";
+    private static final String keyChangelogShowOnLaunch = "show_on_launch";
 
     public void setVersionCode() {
-        setInt(KEY_VERSION_CODE, BuildConfig.VERSION_CODE);
+        setInt(keyVersionCode, BuildConfig.VERSION_CODE);
     }
 
     public int getStoredVersionCode() {
-        return getInt(KEY_VERSION_CODE, -1);
+        return getInt(keyVersionCode, -1);
     }
 
-    private static final String KEY_CHANGELOG_SHOW_ON_LAUNCH = "show_on_launch";
-
-    public void setShowChangelogOnLaunch(boolean showOnLaunch) {
-        setBool(KEY_CHANGELOG_SHOW_ON_LAUNCH, showOnLaunch);
+    public void setShowChangelogOnLaunch(boolean show) {
+        setBool(keyChangelogShowOnLaunch, show);
     }
 
     public boolean getShowChangelogOnLaunch() {
-        return getBool(KEY_CHANGELOG_SHOW_ON_LAUNCH, true);
+        return getBool(keyChangelogShowOnLaunch, true);
     }
 
-    // Playback
-
+    // Playback shuffle preference
     public boolean getRememberShuffle() {
-        return getBool(KEY_PREF_REMEMBER_SHUFFLE, false);
+        return getBool(keyPrefRememberShuffle, false);
     }
 
-    public void setRememberShuffle(boolean rememberShuffle) {
-        setBool(KEY_PREF_REMEMBER_SHUFFLE, rememberShuffle);
+    public void setRememberShuffle(boolean remember) {
+        setBool(keyPrefRememberShuffle, remember);
     }
 
-    // Library Controller
-
-    private static final String KEY_DEFAULT_PAGE = "default_page";
-
+    // Default page
     @CategoryItem.Type
     public int getDefaultPageType() {
-        return getInt(KEY_DEFAULT_PAGE, CategoryItem.Type.ARTISTS);
+        return getInt(keyPrefDefaultPage, CategoryItem.Type.ARTISTS);
     }
 
     public void setDefaultPageType(@CategoryItem.Type int type) {
-        setInt(KEY_DEFAULT_PAGE, type);
+        setInt(keyPrefDefaultPage, type);
     }
 
-    // Legacy Upgrade Preference
-    private static final String KEY_UPGRADED = "pref_theme_gold";
+    // Legacy upgrade flag
+    private static final String keyUpgraded = "pref_theme_gold";
 
-    public boolean getIsLegacyUpgraded() {
-        return getBool(KEY_UPGRADED, false);
+    public boolean isLegacyUpgraded() {
+        return getBool(keyUpgraded, false);
     }
 
-    // Recently added
-
-    private static final String KEY_NUM_WEEKS = "numweeks";
+    // Recently added weeks
+    private static final String keyNumWeeks = "numweeks";
 
     public int getNumWeeks() {
-        return getInt(KEY_NUM_WEEKS, 2);
+        return getInt(keyNumWeeks, 2);
     }
 
     public void setNumWeeks(int weeks) {
-        setInt(KEY_NUM_WEEKS, weeks);
+        setInt(keyNumWeeks, weeks);
     }
 
-    // Song List
+    // Song list artwork
+    private static final String keySongListArtwork = "pref_artwork_song_list";
 
     public boolean showArtworkInSongList() {
-        return getBool(KEY_SONG_LIST_ARTWORK, true);
+        return getBool(keySongListArtwork, true);
     }
 
-    public void setShowArtworkInSongList(boolean showArtworkInSongList) {
-        setBool(KEY_SONG_LIST_ARTWORK, showArtworkInSongList);
+    public void setShowArtworkInSongList(boolean show) {
+        setBool(keySongListArtwork, show);
+    }
+
+    // --- Accessors for renamed fields ---
+
+    public static String getKeyPrefChangelog() {
+        return keyPrefChangelog;
+    }
+
+    public static String getKeyPrefFaq() {
+        return keyPrefFaq;
+    }
+
+    public static String getKeyPrefHelp() {
+        return keyPrefHelp;
+    }
+
+    public static String getKeyPrefRate() {
+        return keyPrefRate;
+    }
+
+    public static String getKeyPrefRestorePurchases() {
+        return keyPrefRestorePurchases;
+    }
+
+    public static String getKeyPrefTabChooser() {
+        return keyPrefTabChooser;
+    }
+
+    public static String getKeyDisplayRemainingTime() {
+        return keyDisplayRemainingTime;
+    }
+
+    public boolean hasSeenRateSnackbar() {
+        return hasSeenRateSnackbar;
+    }
+
+    public void setHasSeenRateSnackbar(boolean seen) {
+        this.hasSeenRateSnackbar = seen;
     }
 }

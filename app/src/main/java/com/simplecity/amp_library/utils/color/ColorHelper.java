@@ -1,21 +1,5 @@
 package com.simplecity.amp_library.utils.color;
 
-/*
- * Copyright (C) 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License
- */
-
 import android.app.Notification;
 import android.content.Context;
 import android.graphics.Color;
@@ -35,29 +19,18 @@ public class ColorHelper {
 
     private static final String TAG = "ColorHelper";
 
-    private static final Object sLock = new Object();
+    // Eager Singleton instance
+    private static final ColorHelper INSTANCE = new ColorHelper();
 
-    private static ColorHelper sInstance;
-
+    /** @return the singleton instance */
     public static ColorHelper getInstance() {
-        synchronized (sLock) {
-            if (sInstance == null) {
-                sInstance = new ColorHelper();
-            }
-            return sInstance;
-        }
+        return INSTANCE;
     }
 
-    /**
-     * Finds a suitable color such that there's enough contrast.
-     *
-     * @param color the color to start searching from.
-     * @param other the color to ensure contrast against. Assumed to be lighter than {@param color}
-     * @param findFg if true, we assume {@param color} is a foreground, otherwise a background.
-     * @param minRatio the minimum contrast ratio required.
-     * @return a color with the same hue as {@param color}, potentially darkened to meet the
-     *          contrast ratio.
-     */
+    /** Prevent instantiation */
+    private ColorHelper() {}
+
+    // contrast‐finding using LAB
     private static int findContrastColor(int color, int other, boolean findFg, double minRatio) {
         int fg = findFg ? color : other;
         int bg = findFg ? other : color;
@@ -68,14 +41,16 @@ public class ColorHelper {
         double[] lab = new double[3];
         ColorUtilsFromCompat.colorToLAB(findFg ? fg : bg, lab);
 
-        double low = 0, high = lab[0];
-        final double a = lab[1], b = lab[2];
+        double low = 0;
+        double high = lab[0];
+        final double a = lab[1];
+        final double bb = lab[2];
         for (int i = 0; i < 15 && high - low > 0.00001; i++) {
             final double l = (low + high) / 2;
             if (findFg) {
-                fg = ColorUtilsFromCompat.LABToColor(l, a, b);
+                fg = ColorUtilsFromCompat.LABToColor(l, a, bb);
             } else {
-                bg = ColorUtilsFromCompat.LABToColor(l, a, b);
+                bg = ColorUtilsFromCompat.LABToColor(l, a, bb);
             }
             if (ColorUtilsFromCompat.calculateContrast(fg, bg) > minRatio) {
                 low = l;
@@ -83,17 +58,9 @@ public class ColorHelper {
                 high = l;
             }
         }
-        return ColorUtilsFromCompat.LABToColor(low, a, b);
+        return ColorUtilsFromCompat.LABToColor(low, a, bb);
     }
 
-    /**
-     * Finds a suitable alpha such that there's enough contrast.
-     *
-     * @param color the color to start searching from.
-     * @param backgroundColor the color to ensure contrast against.
-     * @param minRatio the minimum contrast ratio required.
-     * @return the same color as {@param color} with potentially modified alpha to meet contrast
-     */
     private static int findAlphaToMeetContrast(int color, int backgroundColor, double minRatio) {
         int fg = color;
         int bg = backgroundColor;
@@ -105,7 +72,8 @@ public class ColorHelper {
         int g = Color.green(color);
         int b = Color.blue(color);
 
-        int low = startAlpha, high = 255;
+        int low = startAlpha;
+        int high = 255;
         for (int i = 0; i < 15 && high - low > 0; i++) {
             final int alpha = (low + high) / 2;
             fg = Color.argb(alpha, r, g, b);
@@ -118,18 +86,7 @@ public class ColorHelper {
         return Color.argb(high, r, g, b);
     }
 
-    /**
-     * Finds a suitable color such that there's enough contrast.
-     *
-     * @param color the color to start searching from.
-     * @param other the color to ensure contrast against. Assumed to be darker than {@param color}
-     * @param findFg if true, we assume {@param color} is a foreground, otherwise a background.
-     * @param minRatio the minimum contrast ratio required.
-     * @return a color with the same hue as {@param color}, potentially darkened to meet the
-     *          contrast ratio.
-     */
-    private static int findContrastColorAgainstDark(int color, int other, boolean findFg,
-            double minRatio) {
+    private static int findContrastColorAgainstDark(int color, int other, boolean findFg, double minRatio) {
         int fg = findFg ? color : other;
         int bg = findFg ? other : color;
         if (ColorUtilsFromCompat.calculateContrast(fg, bg) >= minRatio) {
@@ -139,7 +96,8 @@ public class ColorHelper {
         float[] hsl = new float[3];
         ColorUtilsFromCompat.colorToHSL(findFg ? fg : bg, hsl);
 
-        float low = hsl[2], high = 1;
+        float low = hsl[2];
+        float high = 1f;
         for (int i = 0; i < 15 && high - low > 0.00001; i++) {
             final float l = (low + high) / 2;
             hsl[2] = l;
@@ -157,41 +115,25 @@ public class ColorHelper {
         return findFg ? fg : bg;
     }
 
-    /**
-     * Change a color by a specified value
-     * @param baseColor the base color to lighten
-     * @param amount the amount to lighten the color from 0 to 100. This corresponds to the L
-     *               increase in the LAB color space. A negative value will darken the color and
-     *               a positive will lighten it.
-     * @return the changed color
-     */
     private static int changeColorLightness(int baseColor, int amount) {
-        final double[] result = ColorUtilsFromCompat.getTempDouble3Array();
-        ColorUtilsFromCompat.colorToLAB(baseColor, result);
-        result[0] = Math.max(Math.min(100, result[0] + amount), 0);
-        return ColorUtilsFromCompat.LABToColor(result[0], result[1], result[2]);
+        final double[] lab = ColorUtilsFromCompat.getTempDouble3Array();
+        ColorUtilsFromCompat.colorToLAB(baseColor, lab);
+        lab[0] = Math.max(Math.min(100, lab[0] + amount), 0);
+        return ColorUtilsFromCompat.LABToColor(lab[0], lab[1], lab[2]);
     }
 
     public static int resolvePrimaryColor(Context context, int backgroundColor) {
         boolean useDark = shouldUseDark(backgroundColor);
-        if (useDark) {
-            return context.getResources().getColor(
-                    android.R.color.primary_text_light);
-        } else {
-            return context.getResources().getColor(
-                   android.R.color.primary_text_dark);
-        }
+        return context.getResources().getColor(
+            useDark ? android.R.color.primary_text_light : android.R.color.primary_text_dark
+        );
     }
 
     public static int resolveSecondaryColor(Context context, int backgroundColor) {
         boolean useDark = shouldUseDark(backgroundColor);
-        if (useDark) {
-            return context.getResources().getColor(
-                    android.R.color.secondary_text_light);
-        } else {
-            return context.getResources().getColor(
-                    android.R.color.secondary_text_dark);
-        }
+        return context.getResources().getColor(
+            useDark ? android.R.color.secondary_text_light : android.R.color.secondary_text_dark
+        );
     }
 
     private static boolean shouldUseDark(int backgroundColor) {
@@ -202,16 +144,16 @@ public class ColorHelper {
         return useDark;
     }
 
-    private static double calculateLuminance(int backgroundColor) {
-        return ColorUtilsFromCompat.calculateLuminance(backgroundColor);
+    private static double calculateLuminance(int color) {
+        return ColorUtilsFromCompat.calculateLuminance(color);
     }
 
-    private static double calculateContrast(int foregroundColor, int backgroundColor) {
-        return ColorUtilsFromCompat.calculateContrast(foregroundColor, backgroundColor);
+    private static double calculateContrast(int fg, int bg) {
+        return ColorUtilsFromCompat.calculateContrast(fg, bg);
     }
 
-    private static boolean satisfiesTextContrast(int backgroundColor, int foregroundColor) {
-        return ColorHelper.calculateContrast(foregroundColor, backgroundColor) >= 4.5;
+    private static boolean satisfiesTextContrast(int bg, int fg) {
+        return calculateContrast(fg, bg) >= 4.5;
     }
 
     static boolean isColorLight(int backgroundColor) {
@@ -659,87 +601,64 @@ public class ColorHelper {
     }
 
 
-    /**
-     * The lightness difference that has to be added to the primary text color to obtain the
-     * secondary text color when the background is light.
-     */
     private static final int LIGHTNESS_TEXT_DIFFERENCE_LIGHT = 20;
+    private static final int LIGHTNESS_TEXT_DIFFERENCE_DARK  = -10;
 
-    /**
-     * The lightness difference that has to be added to the primary text color to obtain the
-     * secondary text color when the background is dark.
-     * A bit less then the above value, since it looks better on dark backgrounds.
-     */
-    private static final int LIGHTNESS_TEXT_DIFFERENCE_DARK = -10;
-
-    public Pair<Integer, Integer> ensureColors(Context context, boolean hasForegroundColor, int backgroundColor, int foregroundColor) {
-        int primaryTextColor;
-        int secondaryTextColor;
-        if (!hasForegroundColor) {
-            primaryTextColor = ColorHelper.resolvePrimaryColor(context, backgroundColor);
-            secondaryTextColor = ColorHelper.resolveSecondaryColor(context, backgroundColor);
-            int COLOR_DEFAULT = 0;
-            if (backgroundColor != COLOR_DEFAULT) {
-                primaryTextColor = ColorHelper.findAlphaToMeetContrast(primaryTextColor, backgroundColor, 4.5);
-                secondaryTextColor = ColorHelper.findAlphaToMeetContrast(secondaryTextColor, backgroundColor, 4.5);
+    public Pair<Integer, Integer> ensureColors(
+        Context context,
+        boolean hasFg,
+        int bgColor,
+        int fgColor
+    ) {
+        int primary;
+        int secondary;
+        if (!hasFg) {
+            primary   = resolvePrimaryColor(context, bgColor);
+            secondary = resolveSecondaryColor(context, bgColor);
+            if (bgColor != 0) {
+                primary   = findAlphaToMeetContrast(primary, bgColor, 4.5);
+                secondary = findAlphaToMeetContrast(secondary, bgColor, 4.5);
             }
         } else {
-            double backLum = ColorHelper.calculateLuminance(backgroundColor);
-            double textLum = ColorHelper.calculateLuminance(foregroundColor);
-            double contrast = ColorHelper.calculateContrast(foregroundColor,
-                    backgroundColor);
-            // We only respect the given colors if worst case Black or White still has
-            // contrast
-            boolean backgroundLight = backLum > textLum && ColorHelper.satisfiesTextContrast(backgroundColor, Color.BLACK)
-                    || backLum <= textLum && !ColorHelper.satisfiesTextContrast(backgroundColor, Color.WHITE);
+            double backLum = calculateLuminance(bgColor);
+            double textLum = calculateLuminance(fgColor);
+            double contrast= calculateContrast(fgColor, bgColor);
+            boolean bgLight = (backLum > textLum && satisfiesTextContrast(bgColor, Color.BLACK))
+                           || (backLum <= textLum && !satisfiesTextContrast(bgColor, Color.WHITE));
             if (contrast < 4.5f) {
-                if (backgroundLight) {
-                    secondaryTextColor = ColorHelper.findContrastColor(
-                            foregroundColor,
-                            backgroundColor,
-                            true /* findFG */,
-                            4.5f);
-                    primaryTextColor = ColorHelper.changeColorLightness(
-                            secondaryTextColor, -LIGHTNESS_TEXT_DIFFERENCE_LIGHT);
+                if (bgLight) {
+                    secondary = findContrastColor(fgColor, bgColor, true, 4.5f);
+                    primary   = changeColorLightness(secondary, -LIGHTNESS_TEXT_DIFFERENCE_LIGHT);
                 } else {
-                    secondaryTextColor =
-                            ColorHelper.findContrastColorAgainstDark(
-                                    foregroundColor,
-                                    backgroundColor,
-                                    true /* findFG */,
-                                    4.5f);
-                    primaryTextColor = ColorHelper.changeColorLightness(
-                            secondaryTextColor, -LIGHTNESS_TEXT_DIFFERENCE_DARK);
+                    secondary = findContrastColorAgainstDark(fgColor, bgColor, true, 4.5f);
+                    primary   = changeColorLightness(secondary, -LIGHTNESS_TEXT_DIFFERENCE_DARK);
                 }
             } else {
-                primaryTextColor = foregroundColor;
-                secondaryTextColor = ColorHelper.changeColorLightness(
-                        primaryTextColor, backgroundLight ? LIGHTNESS_TEXT_DIFFERENCE_LIGHT
-                                : LIGHTNESS_TEXT_DIFFERENCE_DARK);
-                if (ColorHelper.calculateContrast(secondaryTextColor,
-                        backgroundColor) < 4.5f) {
-                    // oh well the secondary is not good enough
-                    if (backgroundLight) {
-                        secondaryTextColor = ColorHelper.findContrastColor(
-                                secondaryTextColor,
-                                backgroundColor,
-                                true /* findFG */,
-                                4.5f);
+                primary   = fgColor;
+                secondary = changeColorLightness(
+                    primary,
+                    bgLight ? LIGHTNESS_TEXT_DIFFERENCE_LIGHT : LIGHTNESS_TEXT_DIFFERENCE_DARK
+                );
+                if (calculateContrast(secondary, bgColor) < 4.5f) {
+                    if (bgLight) {
+                        secondary = findContrastColor(secondary, bgColor, true, 4.5f);
                     } else {
-                        secondaryTextColor
-                                = ColorHelper.findContrastColorAgainstDark(
-                                secondaryTextColor,
-                                backgroundColor,
-                                true /* findFG */,
-                                4.5f);
+                        secondary = findContrastColorAgainstDark(
+                            secondary,
+                            bgColor,
+                            true,
+                            4.5f
+                        );
                     }
-                    primaryTextColor = ColorHelper.changeColorLightness(
-                            secondaryTextColor, backgroundLight
-                                    ? -LIGHTNESS_TEXT_DIFFERENCE_LIGHT
-                                    : -LIGHTNESS_TEXT_DIFFERENCE_DARK);
+                    primary = changeColorLightness(
+                        secondary,
+                        bgLight
+                            ? -LIGHTNESS_TEXT_DIFFERENCE_LIGHT
+                            : -LIGHTNESS_TEXT_DIFFERENCE_DARK
+                    );
                 }
             }
         }
-        return new Pair<>(primaryTextColor, secondaryTextColor);
+        return new Pair<>(primary, secondary);
     }
 }
