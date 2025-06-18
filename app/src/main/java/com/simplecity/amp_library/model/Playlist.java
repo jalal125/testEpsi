@@ -14,98 +14,178 @@ import kotlin.jvm.functions.Function1;
 
 public class Playlist implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private static final String TAG = "Playlist";
 
     public @interface Type {
-        int PODCAST = 0;
-        int RECENTLY_ADDED = 1;
-        int MOST_PLAYED = 2;
+        int PODCAST         = 0;
+        int RECENTLY_ADDED  = 1;
+        int MOST_PLAYED     = 2;
         int RECENTLY_PLAYED = 3;
-        int FAVORITES = 4;
-        int USER_CREATED = 5;
+        int FAVORITES       = 4;
+        int USER_CREATED    = 5;
     }
 
     @Type
-    public int type;
+    private final int type;
 
-    private long id;
-    public String name;
-    public boolean canEdit = true;
-    public boolean canClear = false;
-    public boolean canDelete = true;
-    public boolean canRename = true;
-    public boolean canSort = true;
+    private final long id;
+    private final String name;
+    private final boolean canEdit;
+    private final boolean canClear;
+    private final boolean canDelete;
+    private final boolean canRename;
+    private final boolean canSort;
 
-    // These are the Playlist rows that we will retrieve.
+    /** Columns to retrieve from the playlists table. */
     protected static final String[] PROJECTION = new String[] {
-            MediaStore.Audio.Playlists._ID,
-            MediaStore.Audio.Playlists.NAME
+        MediaStore.Audio.Playlists._ID,
+        MediaStore.Audio.Playlists.NAME
     };
 
+    /**
+     * Builds the base query to list all playlists.
+     */
     public static Query getQuery() {
         return new Query.Builder()
-                .uri(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI)
-                .projection(PROJECTION)
-                .selection(null)
-                .sort(null)
-                .build();
+            .uri(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI)
+            .projection(PROJECTION)
+            .selection(null)
+            .sort(null)
+            .build();
     }
 
-    public Playlist(@Type int type, long id, String name, boolean canEdit, boolean canClear, boolean canDelete, boolean canRename, boolean canSort) {
-        this.type = type;
-        this.id = id;
-        this.name = name;
-        this.canEdit = canEdit;
-        this.canClear = canClear;
+    /**
+     * Creates a Playlist of a built-in type.
+     */
+    public Playlist(
+        @Type int type,
+        long id,
+        String name,
+        boolean canEdit,
+        boolean canClear,
+        boolean canDelete,
+        boolean canRename,
+        boolean canSort
+    ) {
+        this.type      = type;
+        this.id        = id;
+        this.name      = name;
+        this.canEdit   = canEdit;
+        this.canClear  = canClear;
         this.canDelete = canDelete;
         this.canRename = canRename;
-        this.canSort = canSort;
+        this.canSort   = canSort;
     }
 
+    /**
+     * Reads a user-created playlist from a cursor.
+     */
     public Playlist(Context context, Cursor cursor) {
-        id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID));
-        name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME));
-        type = Type.USER_CREATED;
-        canClear = true;
+        this.id        = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID));
+        this.name      = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME));
+        this.type      = Type.USER_CREATED;
+        this.canEdit   = true;
+        this.canClear  = true;
+        this.canDelete = true;
+        this.canRename = true;
+        this.canSort   = true;
 
         if (context.getString(R.string.fav_title).equals(name)) {
-            type = Type.FAVORITES;
-            canDelete = false;
-            canRename = false;
+            // Treat the "Favorites" playlist specially
+            this.type      = Type.FAVORITES;
+            this.canDelete = false;
+            this.canRename = false;
         }
     }
 
-    public void clear(PlaylistManager playlistManager, FavoritesPlaylistManager favoritesPlaylistManager) {
+    /**
+     * Clears the contents of this playlist.
+     */
+    public void clear(
+        PlaylistManager playlistManager,
+        FavoritesPlaylistManager favoritesPlaylistManager
+    ) {
         switch (type) {
-            case Playlist.Type.FAVORITES:
+            case Type.FAVORITES:
                 favoritesPlaylistManager.clearFavorites();
                 break;
-            case Playlist.Type.MOST_PLAYED:
+            case Type.MOST_PLAYED:
                 playlistManager.clearMostPlayed();
                 break;
-            case Playlist.Type.USER_CREATED:
+            case Type.USER_CREATED:
                 playlistManager.clearPlaylist(id);
                 break;
+            default:
+                // Should never happen
+                throw new IllegalStateException("Cannot clear unknown playlist type: " + type);
         }
     }
 
-    public void removeSong(@NonNull Song song, PlaylistManager playlistManager, @Nullable Function1<Boolean, Unit> success) {
+    /**
+     * Removes a song from this playlist.
+     */
+    public void removeSong(
+        @NonNull Song song,
+        PlaylistManager playlistManager,
+        @Nullable Function1<Boolean, Unit> success
+    ) {
         playlistManager.removeFromPlaylist(this, song, success);
     }
 
+    /**
+     * Moves a song within this playlist.
+     */
     public boolean moveSong(Context context, int from, int to) {
-        return MediaStore.Audio.Playlists.Members.moveItem(context.getContentResolver(), id, from, to);
+        return MediaStore.Audio.Playlists.Members
+            .moveItem(context.getContentResolver(), id, from, to);
     }
+
+    // --- Accessors ---
+
+    @Type
+    public int getType() {
+        return type;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean canEdit() {
+        return canEdit;
+    }
+
+    public boolean canClear() {
+        return canClear;
+    }
+
+    public boolean canDelete() {
+        return canDelete;
+    }
+
+    public boolean canRename() {
+        return canRename;
+    }
+
+    public boolean canSort() {
+        return canSort;
+    }
+
+    // --- equals / hashCode / toString ---
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Playlist playlist = (Playlist) o;
-
-        if (id != playlist.id) return false;
-        return name != null ? name.equals(playlist.name) : playlist.name == null;
+        Playlist that = (Playlist) o;
+        if (id != that.id) return false;
+        return name != null ? name.equals(that.name) : that.name == null;
     }
 
     @Override
@@ -118,16 +198,23 @@ public class Playlist implements Serializable {
     @Override
     public String toString() {
         return "Playlist{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+               "type=" + type +
+               ", id=" + id +
+               ", name='" + name + '\'' +
+               '}';
     }
 
+    /**
+     * Builds a Song instance from a playlist-members cursor.
+     */
     public static Song createSongFromPlaylistCursor(Cursor cursor) {
         Song song = new Song(cursor);
-        song.id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID));
-        song.playlistSongId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members._ID));
-        song.playlistSongPlayOrder = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.PLAY_ORDER));
+        song.id                = cursor.getLong(
+            cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID));
+        song.playlistSongId    = cursor.getLong(
+            cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members._ID));
+        song.playlistSongPlayOrder = cursor.getLong(
+            cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.PLAY_ORDER));
         return song;
     }
 }

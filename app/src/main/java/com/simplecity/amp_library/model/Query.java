@@ -5,52 +5,76 @@ import java.util.Arrays;
 
 public class Query {
 
-    private Uri uri;
-    public String[] projection;
-    public String selection;
-    public String[] args;
-    public String sort;
+    private final Uri uri;
+    private final String[] projection;
+    private final String selection;
+    private final String[] args;
+    private final String sort;
 
     Query(Builder builder) {
-        uri = builder.uri;
-        projection = builder.projection;
-        selection = builder.selection;
-        args = builder.args;
-        sort = builder.sort;
+        this.uri = builder.uri;
+        this.projection = builder.projection;
+        this.selection = builder.selection;
+        this.args = builder.args;
+        this.sort = builder.sort;
+    }
+
+    /** Returns the content URI to query. */
+    public Uri getUri() {
+        return uri;
+    }
+
+    /** Returns the columns to retrieve. */
+    public String[] getProjection() {
+        return projection;
+    }
+
+    /** Returns the selection clause. */
+    public String getSelection() {
+        return selection;
+    }
+
+    /** Returns the selection arguments. */
+    public String[] getArgs() {
+        return args;
+    }
+
+    /** Returns the sort order. */
+    public String getSort() {
+        return sort;
     }
 
     public static final class Builder {
-        Uri uri;
-        String[] projection;
-        String selection;
-        String[] args;
-        String sort;
+        private Uri uri;
+        private String[] projection;
+        private String selection;
+        private String[] args;
+        private String sort;
 
-        public Builder() {
-        }
+        public Builder() {}
 
         public Builder uri(Uri val) {
-            uri = val;
+            this.uri = val;
             return this;
         }
 
         public Builder projection(String[] val) {
-            projection = val;
+            this.projection = val;
             return this;
         }
 
         public Builder selection(String val) {
-            selection = val;
+            this.selection = val;
             return this;
         }
 
         public Builder args(String[] val) {
-            args = val;
+            this.args = val;
             return this;
         }
 
         public Builder sort(String val) {
-            sort = val;
+            this.sort = val;
             return this;
         }
 
@@ -62,11 +86,11 @@ public class Query {
     @Override
     public String toString() {
         return "Query{" +
-                "\nuri=" + uri +
-                "\nPROJECTION=" + Arrays.toString(projection) +
-                "\nselection='" + selection + '\'' +
-                "\nargs=" + Arrays.toString(args) +
-                "\nsort='" + sort + '\'' +
-                '}';
+               "\n uri=" + uri +
+               "\n projection=" + Arrays.toString(projection) +
+               "\n selection='" + selection + '\'' +
+               "\n args=" + Arrays.toString(args) +
+               "\n sort='" + sort + '\'' +
+               '}';
     }
 }

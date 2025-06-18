@@ -20,41 +20,44 @@ import java.util.List;
 public class CategoryItem {
 
     public @interface Type {
-        int GENRES = 0;
-        int SUGGESTED = 1;
-        int ARTISTS = 2;
-        int ALBUMS = 3;
-        int SONGS = 4;
-        int PLAYLISTS = 5;
-        int FOLDERS = 6;
+        int GENRES     = 0;
+        int SUGGESTED  = 1;
+        int ARTISTS    = 2;
+        int ALBUMS     = 3;
+        int SONGS      = 4;
+        int PLAYLISTS  = 5;
+        int FOLDERS    = 6;
     }
 
     @Type
-    public int type;
+    private final int type;
+    private final int sortOrder;
+    private boolean isChecked;
 
-    private int sortOrder;
-
-    public boolean isChecked;
-
-    private CategoryItem(@Type int type, SharedPreferences sharedPreferences) {
-        this.type = type;
-        isChecked = sharedPreferences.getBoolean(getEnabledKey(), isEnabledByDefault());
-        sortOrder = sharedPreferences.getInt(getSortKey(), 0);
+    private CategoryItem(@Type int type, SharedPreferences prefs) {
+        this.type      = type;
+        this.isChecked = prefs.getBoolean(getEnabledKey(), isEnabledByDefault());
+        this.sortOrder = prefs.getInt(getSortKey(), 0);
     }
 
-    public static List<CategoryItem> getCategoryItems(SharedPreferences sharedPreferences) {
+    /**
+     * Loads all category items in user-defined sort order.
+     */
+    public static List<CategoryItem> getCategoryItems(SharedPreferences prefs) {
         List<CategoryItem> items = new ArrayList<>();
-        items.add(new CategoryItem(Type.GENRES, sharedPreferences));
-        items.add(new CategoryItem(Type.SUGGESTED, sharedPreferences));
-        items.add(new CategoryItem(Type.ARTISTS, sharedPreferences));
-        items.add(new CategoryItem(Type.ALBUMS, sharedPreferences));
-        items.add(new CategoryItem(Type.SONGS, sharedPreferences));
-        items.add(new CategoryItem(Type.FOLDERS, sharedPreferences));
-        items.add(new CategoryItem(Type.PLAYLISTS, sharedPreferences));
-        Collections.sort(items, (a, b) -> ComparisonUtils.compareInt(a.sortOrder, b.sortOrder));
+        items.add(new CategoryItem(Type.GENRES, prefs));
+        items.add(new CategoryItem(Type.SUGGESTED, prefs));
+        items.add(new CategoryItem(Type.ARTISTS, prefs));
+        items.add(new CategoryItem(Type.ALBUMS, prefs));
+        items.add(new CategoryItem(Type.SONGS, prefs));
+        items.add(new CategoryItem(Type.FOLDERS, prefs));
+        items.add(new CategoryItem(Type.PLAYLISTS, prefs));
+        Collections.sort(items,
+            (a, b) -> ComparisonUtils.compareInt(a.getSortOrder(), b.getSortOrder()));
         return items;
     }
 
+    /** Persists this item's enabled state and sort order. */
     public void savePrefs(SharedPreferences.Editor editor) {
         editor.putBoolean(getEnabledKey(), isChecked);
         editor.putInt(getSortKey(), sortOrder);
@@ -64,62 +67,46 @@ public class CategoryItem {
     @StringRes
     public int getTitleResId() {
         switch (type) {
-            case Type.GENRES:
-                return R.string.genres_title;
-            case Type.SUGGESTED:
-                return R.string.suggested_title;
-            case Type.ARTISTS:
-                return R.string.artists_title;
-            case Type.ALBUMS:
-                return R.string.albums_title;
-            case Type.SONGS:
-                return R.string.tracks_title;
-            case Type.FOLDERS:
-                return R.string.folders_title;
-            case Type.PLAYLISTS:
-                return R.string.playlists_title;
+            case Type.GENRES:     return R.string.genres_title;
+            case Type.SUGGESTED:  return R.string.suggested_title;
+            case Type.ARTISTS:    return R.string.artists_title;
+            case Type.ALBUMS:     return R.string.albums_title;
+            case Type.SONGS:      return R.string.tracks_title;
+            case Type.FOLDERS:    return R.string.folders_title;
+            case Type.PLAYLISTS:  return R.string.playlists_title;
+            default:
+                throw new IllegalStateException("Unknown category type: " + type);
         }
-        return -1;
     }
 
     public String getKey() {
         switch (type) {
-            case Type.GENRES:
-                return "genres";
-            case Type.SUGGESTED:
-                return "suggested";
-            case Type.ARTISTS:
-                return "artists";
-            case Type.ALBUMS:
-                return "albums";
-            case Type.SONGS:
-                return "songs";
-            case Type.FOLDERS:
-                return "folders";
-            case Type.PLAYLISTS:
-                return "playlists";
+            case Type.GENRES:     return "genres";
+            case Type.SUGGESTED:  return "suggested";
+            case Type.ARTISTS:    return "artists";
+            case Type.ALBUMS:     return "albums";
+            case Type.SONGS:      return "songs";
+            case Type.FOLDERS:    return "folders";
+            case Type.PLAYLISTS:  return "playlists";
+            default:
+                throw new IllegalStateException("Unknown category type: " + type);
         }
-        return null;
     }
 
     public boolean isEnabledByDefault() {
         switch (type) {
             case Type.GENRES:
-                return true;
             case Type.SUGGESTED:
-                return true;
             case Type.ARTISTS:
-                return true;
             case Type.ALBUMS:
-                return true;
             case Type.SONGS:
                 return true;
             case Type.FOLDERS:
-                return false;
             case Type.PLAYLISTS:
                 return false;
+            default:
+                throw new IllegalStateException("Unknown category type: " + type);
         }
-        return true;
     }
 
     public String getSortKey() {
@@ -131,23 +118,37 @@ public class CategoryItem {
     }
 
     public Fragment getFragment(Context context) {
+        String title = context.getString(getTitleResId());
         switch (type) {
             case Type.GENRES:
-                return GenreListFragment.Companion.newInstance(context.getString(getTitleResId()));
+                return GenreListFragment.Companion.newInstance(title);
             case Type.SUGGESTED:
-                return SuggestedFragment.Companion.newInstance(context.getString(getTitleResId()));
+                return SuggestedFragment.Companion.newInstance(title);
             case Type.ARTISTS:
-                return AlbumArtistListFragment.Companion.newInstance(context.getString(getTitleResId()));
+                return AlbumArtistListFragment.Companion.newInstance(title);
             case Type.ALBUMS:
-                return AlbumListFragment.Companion.newInstance(context.getString(getTitleResId()));
+                return AlbumListFragment.Companion.newInstance(title);
             case Type.SONGS:
-                return SongListFragment.Companion.newInstance(context.getString(getTitleResId()));
+                return SongListFragment.Companion.newInstance(title);
             case Type.FOLDERS:
-                return FolderFragment.newInstance(context.getString(getTitleResId()), true);
+                return FolderFragment.newInstance(title, true);
             case Type.PLAYLISTS:
-                return PlaylistListFragment.Companion.newInstance(context.getString(getTitleResId()));
+                return PlaylistListFragment.Companion.newInstance(title);
+            default:
+                throw new IllegalStateException("Unknown category type: " + type);
         }
-        return null;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.isChecked = checked;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
     }
 
     @Override
@@ -156,7 +157,6 @@ public class CategoryItem {
         if (o == null || getClass() != o.getClass()) return false;
 
         CategoryItem that = (CategoryItem) o;
-
         return type == that.type;
     }
 
