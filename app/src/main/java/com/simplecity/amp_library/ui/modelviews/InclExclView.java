@@ -21,7 +21,7 @@ public class InclExclView extends BaseViewModel<InclExclView.ViewHolder> {
         void onRemove(InclExclView InclExclView);
     }
 
-    public InclExclItem inclExclItem;
+    private InclExclItem inclExclItem;
 
     public InclExclView(InclExclItem inclExclItem) {
         this.inclExclItem = inclExclItem;

@@ -33,7 +33,7 @@ public class Song implements
 
     private static final String TAG = "Song";
 
-    public long id;
+    private long id;
     public String name;
     public String artistName;
     public long artistId;
@@ -157,7 +157,7 @@ public class Song implements
 
     public int getPlayCount(Context context) {
 
-        int playCount = 0;
+        int localPlayCount = 0;
 
         Uri playCountUri = PlayCountTable.URI;
         Uri appendedUri = ContentUris.withAppendedId(playCountUri, id);

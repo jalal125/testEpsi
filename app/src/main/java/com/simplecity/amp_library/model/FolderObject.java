@@ -4,7 +4,7 @@ import com.simplecity.amp_library.interfaces.FileType;
 
 public class FolderObject extends BaseFileObject {
 
-    public int fileCount;
+    private int fileCount;
     public int folderCount;
 
     public FolderObject() {

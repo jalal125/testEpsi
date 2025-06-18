@@ -11,7 +11,7 @@ public class ArtworkModel {
     @ArtworkProvider.Type
     public int type;
 
-    public File file;
+    private File file;
 
     public ArtworkModel(@ArtworkProvider.Type int type, File file) {
         this.type = type;

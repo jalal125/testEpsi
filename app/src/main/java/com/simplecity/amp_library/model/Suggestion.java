@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Suggestion {
 
-    public AlbumArtist mostPlayedArtist;
+    private AlbumArtist mostPlayedArtist;
     public Album mostPlayedAlbum;
     public Song mostPlayedSong;
     public ArrayList<Song> favouriteSongsOne = new ArrayList<>(3);

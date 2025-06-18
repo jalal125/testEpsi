@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class Genre implements Serializable {
 
-    public long id;
+    private long id;
     public String name;
     public int numSongs;
 

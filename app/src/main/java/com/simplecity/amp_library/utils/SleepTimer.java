@@ -25,7 +25,7 @@ public final class SleepTimer {
 
     private boolean isActive;
 
-    public boolean playToEnd = false;
+    private boolean playToEnd = false;
 
     private int timeRemaining = 0;
 

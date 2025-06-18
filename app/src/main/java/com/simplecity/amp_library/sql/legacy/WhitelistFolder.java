@@ -4,7 +4,7 @@ import android.database.Cursor;
 
 public class WhitelistFolder {
 
-    public long id;
+    private long id;
     public String folder;
 
     public WhitelistFolder(Cursor cursor) {

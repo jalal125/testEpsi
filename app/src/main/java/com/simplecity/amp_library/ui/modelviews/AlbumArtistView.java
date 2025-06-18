@@ -34,7 +34,7 @@ public class AlbumArtistView extends MultiItemView<AlbumArtistView.ViewHolder, A
 
     private static final String TAG = "AlbumArtistView";
 
-    public AlbumArtist albumArtist;
+    private AlbumArtist albumArtist;
 
     private int viewType;
 

@@ -22,6 +22,6 @@ public class ColorSetResource implements Resource<ColorSet> {
 
     @Override
     public void recycle() {
-
+        // Nothing to recycle. This implementation does not hold any resources that require recycling.
     }
 }

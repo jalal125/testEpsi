@@ -4,8 +4,8 @@ import com.simplecity.amp_library.model.ArtworkProvider;
 import java.io.InputStream;
 
 public class TagFetcher extends BaseFetcher {
-
-    String TAG = "TagFetcher";
+    
+    String tag = "TagFetcher";
 
     public TagFetcher(ArtworkProvider artworkProvider) {
         super(artworkProvider);

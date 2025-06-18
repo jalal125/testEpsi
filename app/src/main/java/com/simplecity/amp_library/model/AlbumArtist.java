@@ -18,16 +18,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AlbumArtist implements
-        Serializable,
-        Comparable<AlbumArtist>,
-        ArtworkProvider,
-        Sortable {
+public class AlbumArtist implements Serializable, Comparable<AlbumArtist>, ArtworkProvider, Sortable {
 
-    public String name;
-
+    private String name;
     public List<Album> albums = new ArrayList<>();
-
     private String sortKey;
 
     public AlbumArtist(String name, List<Album> albums) {
@@ -37,7 +31,7 @@ public class AlbumArtist implements
 
     public Single<List<Song>> getSongsSingle(Repository.SongsRepository songsRepository) {
         return songsRepository.getSongs(song -> Stream.of(albums)
-                .map(album -> album.id)
+                .map(album -> album.getId())
                 .anyMatch(albumId -> albumId == song.albumId))
                 .first(Collections.emptyList());
     }

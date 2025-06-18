@@ -11,7 +11,7 @@ public class InclExclItem {
         int EXCLUDE = 1;
     }
 
-    public long id;
+    private long id;
     @NonNull
     public String path;
     @Type

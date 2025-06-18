@@ -28,11 +28,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class MediaManager {
 
-    public interface Defs {
-
-        int ADD_TO_PLAYLIST = 0;
-        int PLAYLIST_SELECTED = 1;
-        int NEW_PLAYLIST = 2;
+    public static class ActionDefs {
+        public static final int ADD_TO_PLAYLIST = 0;
+        public static final int PLAYLIST_SELECTED = 1;
+        public static final int NEW_PLAYLIST = 2;
     }
 
     private AnalyticsManager analyticsManager;
@@ -52,7 +51,7 @@ public class MediaManager {
         return songsSingle
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        songs -> playAll(songs, 0, true, onEmpty),
+                        songList -> playAll(songList, 0, true, onEmpty),
                         error -> LogUtils.logException(TAG, "playAll error", error)
                 );
     }

@@ -43,7 +43,8 @@ interface Repository {
         fun getSongs(genre: Genre): Observable<List<Song>>
     }
 
-    interface AlbumsRepository {
+    // Replacing the empty AlbumsRepository interface with a function type for functional usage
+    typealias AlbumsRepository = () -> Observable<List<Album>>
 
         /**
          * Returns a continuous List of [Album]s

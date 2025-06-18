@@ -3,7 +3,7 @@ package com.simplecity.amp_library.ui.screens.search;
 import com.simplecity.amp_library.utils.StringUtils;
 
 public class JaroWinklerObject<T> {
-    public T object;
+    private T object;
     String[] fields;
     public double score;
 

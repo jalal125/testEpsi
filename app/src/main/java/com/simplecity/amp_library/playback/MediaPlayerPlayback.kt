@@ -277,6 +277,10 @@ internal class MediaPlayerPlayback(context: Context) : LocalPlayback(context), M
                 return true
             }
             else -> {
+                isInitialized = false
+                callbacks?.onError(this, "MediaPlayer error: what=$what, extra=$extra")
+                return true
+            }
             }
         }
 
@@ -294,10 +298,11 @@ internal class MediaPlayerPlayback(context: Context) : LocalPlayback(context), M
             callbacks?.onTrackEnded(this, false)
         }
     }
-
+    
     override fun updateLastKnownStreamPosition() {
-
+        // No-op: this implementation does not track stream position
     }
+
 
     private fun createMediaPlayer(context: Context): MediaPlayer {
         val mediaPlayer = MediaPlayer()

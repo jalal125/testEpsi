@@ -2,7 +2,7 @@ package com.simplecity.amp_library.glide.utils;
 
 public class Size {
 
-    public int width;
+    private int width;
     public int height;
 
     public Size(int width, int height) {

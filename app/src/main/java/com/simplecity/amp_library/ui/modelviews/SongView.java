@@ -41,7 +41,7 @@ public class SongView extends BaseSelectableViewModel<SongView.ViewHolder> imple
 
     private static final String TAG = "SongView";
 
-    public Song song;
+    private Song song;
 
     private RequestManager requestManager;
 

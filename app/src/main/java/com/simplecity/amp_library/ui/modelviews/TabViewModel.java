@@ -23,7 +23,7 @@ public class TabViewModel extends BaseViewModel<TabViewModel.ViewHolder> {
         void onFolderChecked(TabViewModel tabViewModel, ViewHolder viewHolder);
     }
 
-    public CategoryItem categoryItem;
+    private CategoryItem categoryItem;
 
     @Nullable
     private Listener listener;

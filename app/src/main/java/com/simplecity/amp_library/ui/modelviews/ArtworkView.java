@@ -42,7 +42,7 @@ public class ArtworkView extends BaseViewModel<ArtworkView.ViewHolder> {
 
     GlideListener glideListener;
 
-    public File file;
+    private File file;
 
     private boolean selected;
 

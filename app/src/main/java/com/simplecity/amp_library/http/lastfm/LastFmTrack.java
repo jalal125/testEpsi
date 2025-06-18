@@ -13,19 +13,19 @@ class LastFmTrack implements LastFmResult {
     public static class Track {
         @SerializedName("album")
         public TrackAlbum album;
+    }
 
-        public static class TrackAlbum {
-
-            @SerializedName("album")
-            public TrackAlbum album;
-
-            @SerializedName("image")
-            public List<LastFmImage> images = new ArrayList<>();
-        }
+    public static class TrackAlbum {
+        @SerializedName("image")
+        public List<LastFmImage> images = new ArrayList<>();
     }
 
     @Override
     public String getImageUrl() {
-        return LastFmUtils.getBestImageUrl(track.album.images);
+        if (track != null && track.album != null) {
+            return LastFmUtils.getBestImageUrl(track.album.images);
+        } else {
+            return null;
+        }
     }
 }

@@ -400,15 +400,15 @@ public class CustomCollapsingToolbarLayout extends FrameLayout {
             final int insetTop = mLastInsets.getSystemWindowInsetTop();
             for (int i = 0, z = getChildCount(); i < z; i++) {
                 final View child = getChildAt(i);
-                if (!ViewCompat.getFitsSystemWindows(child)) {
-                    if (child.getTop() < insetTop) {
-                        // If the child isn't set to fit system windows but is drawing within
-                        // the inset offset it down
-                        ViewCompat.offsetTopAndBottom(child, insetTop);
-                    }
+                if (!ViewCompat.getFitsSystemWindows(child) && child.getTop() < insetTop) {
+                    // If the child isn't set to fit system windows but is drawing within
+                    // the inset offset it down
+                    ViewCompat.offsetTopAndBottom(child, insetTop);
                 }
             }
         }
+    }
+
 
         // Update the collapsed bounds by getting it's transformed bounds
         if (mCollapsingTitleEnabled && mDummyView != null) {
@@ -1220,45 +1220,49 @@ public class CustomCollapsingToolbarLayout extends FrameLayout {
         }
     }
 
-    private class OffsetUpdateListener implements AppBarLayout.OnOffsetChangedListener {
-        OffsetUpdateListener() {
+   private class OffsetUpdateListener implements AppBarLayout.OnOffsetChangedListener {
+    
+    OffsetUpdateListener() {
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout layout, int verticalOffset) {
+        mCurrentOffset = verticalOffset;
+
+        final int insetTop = mLastInsets != null ? mLastInsets.getSystemWindowInsetTop() : 0;
+
+        for (int i = 0, z = getChildCount(); i < z; i++) {
+            final View child = getChildAt(i);
+            final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+            final ViewOffsetHelper offsetHelper = getViewOffsetHelper(child);
+
+            switch (lp.mCollapseMode) {
+                case LayoutParams.COLLAPSE_MODE_PIN:
+                    offsetHelper.setTopAndBottomOffset(
+                            MathUtils.clamp(-verticalOffset, 0, getMaxOffsetForPinChild(child)));
+                    break;
+
+                case LayoutParams.COLLAPSE_MODE_PARALLAX:
+                    offsetHelper.setTopAndBottomOffset(
+                            Math.round(-verticalOffset * lp.mParallaxMult));
+                    break;
+
+                default:
+                    break;
+            }
         }
 
-        @Override
-        public void onOffsetChanged(AppBarLayout layout, int verticalOffset) {
-            mCurrentOffset = verticalOffset;
+        // Show or hide the scrims if needed
+        updateScrimVisibility();
 
-            final int insetTop = mLastInsets != null ? mLastInsets.getSystemWindowInsetTop() : 0;
-
-            for (int i = 0, z = getChildCount(); i < z; i++) {
-                final View child = getChildAt(i);
-                final LayoutParams lp = (LayoutParams) child.getLayoutParams();
-                final ViewOffsetHelper offsetHelper = getViewOffsetHelper(child);
-
-                switch (lp.mCollapseMode) {
-                    case LayoutParams.COLLAPSE_MODE_PIN:
-                        offsetHelper.setTopAndBottomOffset(
-                                MathUtils.clamp(-verticalOffset, 0, getMaxOffsetForPinChild(child)));
-                        break;
-                    case LayoutParams.COLLAPSE_MODE_PARALLAX:
-                        offsetHelper.setTopAndBottomOffset(
-                                Math.round(-verticalOffset * lp.mParallaxMult));
-                        break;
-                }
-            }
-
-            // Show or hide the scrims if needed
-            updateScrimVisibility();
-
-            if (mStatusBarScrim != null && insetTop > 0) {
-                ViewCompat.postInvalidateOnAnimation(CustomCollapsingToolbarLayout.this);
-            }
-
-            // Update the collapsing text's fraction
-            final int expandRange = getHeight() - ViewCompat.getMinimumHeight(
-                    CustomCollapsingToolbarLayout.this) - insetTop;
-            mCollapsingTextHelper.setExpansionFraction(
-                    Math.abs(verticalOffset) / (float) expandRange);
+        if (mStatusBarScrim != null && insetTop > 0) {
+            ViewCompat.postInvalidateOnAnimation(CustomCollapsingToolbarLayout.this);
         }
+
+        // Update the collapsing text's fraction
+        final int expandRange = getHeight() - ViewCompat.getMinimumHeight(
+                CustomCollapsingToolbarLayout.this) - insetTop;
+        mCollapsingTextHelper.setExpansionFraction(
+                Math.abs(verticalOffset) / (float) expandRange);
     }
 }

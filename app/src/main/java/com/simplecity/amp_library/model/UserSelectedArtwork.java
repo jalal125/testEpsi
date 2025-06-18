@@ -4,7 +4,7 @@ public class UserSelectedArtwork {
 
     @ArtworkProvider.Type
     public int type;
-    public String path;
+    private String path;
 
     public UserSelectedArtwork(@ArtworkProvider.Type int type, String path) {
         this.type = type;

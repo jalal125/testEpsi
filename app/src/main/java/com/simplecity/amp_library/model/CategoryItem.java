@@ -32,7 +32,7 @@ public class CategoryItem {
     @Type
     public int type;
 
-    public int sortOrder;
+    private int sortOrder;
 
     public boolean isChecked;
 

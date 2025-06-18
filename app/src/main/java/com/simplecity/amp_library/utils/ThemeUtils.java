@@ -33,7 +33,7 @@ public class ThemeUtils {
 
     public static class Theme {
 
-        public int id;
+        private int id;
         public String primaryColorName;
         public String accentColorName;
 

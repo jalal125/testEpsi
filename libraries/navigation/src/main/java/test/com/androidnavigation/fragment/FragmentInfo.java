@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
 
 public class FragmentInfo implements Parcelable {
 
-    public Class rootViewController;
+    private Class rootViewController;
 
     @Nullable public transient Bundle args;
 

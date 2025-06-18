@@ -25,7 +25,7 @@ public class PlaylistView extends BaseViewModel<PlaylistView.ViewHolder> {
         void onPlaylistOverflowClick(int position, View v, Playlist playlist);
     }
 
-    public Playlist playlist;
+    private Playlist playlist;
 
     @Nullable
     private OnClickListener listener;

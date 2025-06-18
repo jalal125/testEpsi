@@ -7,37 +7,33 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HttpClient {
 
-    public static final String TAG = "HttpClient";
+    private static final String tag = "HttpClient"; // Renamed to match convention
+    private static final String urlLastFm = "https://ws.audioscrobbler.com/2.0/";
+    private static final String urlItunes = "https://itunes.apple.com/search/";
+    public static final String tagArtwork = "artwork";
 
-    private static final String URL_LAST_FM = "https://ws.audioscrobbler.com/2.0/";
-    private static final String URL_ITUNES = "https://itunes.apple.com/search/";
-
-    private static HttpClient sInstance;
-
-    public OkHttpClient okHttpClient;
-
-    public LastFmService lastFmService;
-
-    public static final String TAG_ARTWORK = "artwork";
+    private static HttpClient instance;
+    private final OkHttpClient okHttpClient;
+    public final LastFmService lastFmService;
 
     public static synchronized HttpClient getInstance() {
-        if (sInstance == null) {
-            sInstance = new HttpClient();
+        if (instance == null) {
+            instance = new HttpClient();
         }
-        return sInstance;
+        return instance;
     }
 
     private HttpClient() {
-
-        okHttpClient = new OkHttpClient.Builder()
-                //                .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.168.0.3", 8888)))
+        this.okHttpClient = new OkHttpClient.Builder()
+                //.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.168.0.3", 8888)))
                 .build();
 
         Retrofit lastFmRestAdapter = new Retrofit.Builder()
-                .baseUrl(URL_LAST_FM)
+                .baseUrl(urlLastFm)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        lastFmService = lastFmRestAdapter.create(LastFmService.class);
+
+        this.lastFmService = lastFmRestAdapter.create(LastFmService.class);
     }
 }

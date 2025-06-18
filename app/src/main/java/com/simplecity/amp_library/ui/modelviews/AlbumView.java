@@ -31,7 +31,7 @@ public class AlbumView extends MultiItemView<AlbumView.ViewHolder, Album> implem
 
     private static final String TAG = "AlbumView";
 
-    public Album album;
+    private Album album;
 
     private int viewType;
 

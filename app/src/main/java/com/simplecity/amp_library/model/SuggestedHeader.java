@@ -2,7 +2,7 @@ package com.simplecity.amp_library.model;
 
 public class SuggestedHeader {
 
-    public String title;
+    private String title;
     public String subtitle;
     public Playlist playlist;
 

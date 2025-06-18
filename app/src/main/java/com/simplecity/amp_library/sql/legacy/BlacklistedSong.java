@@ -4,7 +4,7 @@ import android.database.Cursor;
 
 public class BlacklistedSong {
 
-    public long id;
+    private long id;
 
     public long songId;
 

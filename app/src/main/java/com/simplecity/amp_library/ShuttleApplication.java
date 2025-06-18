@@ -74,7 +74,7 @@ public class ShuttleApplication extends DaggerApplication {
 
     private RefWatcher refWatcher;
 
-    public HashMap<String, UserSelectedArtwork> userSelectedArtwork = new HashMap<>();
+    private Map<String, UserSelectedArtwork> userSelectedArtwork = new HashMap<>();
 
     private static Logger jaudioTaggerLogger1 = Logger.getLogger("org.jaudiotagger.audio");
     private static Logger jaudioTaggerLogger2 = Logger.getLogger("org.jaudiotagger");
@@ -103,6 +103,12 @@ public class ShuttleApplication extends DaggerApplication {
         }
 
         // Todo: Remove for production builds. Useful for tracking down crashes in beta.
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            Log.e(TAG, "Uncaught exception in thread " + thread.getName(), throwable);
+            Crashlytics.logException(throwable);
+            // Optionally rethrow to let the system handle it (crash the app)
+            System.exit(1);
+        });
         RxDogTag.install();
 
         if (BuildConfig.DEBUG) {
@@ -218,10 +224,11 @@ public class ShuttleApplication extends DaggerApplication {
         try {
             return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException | NullPointerException ignored) {
-
+            // Exception intentionally ignored: fallback to "unknown" version
         }
         return "unknown";
     }
+
 
     public void setIsUpgraded(boolean isUpgraded) {
         this.isUpgraded = isUpgraded;

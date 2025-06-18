@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Artist implements Serializable {
 
-    public long id;
+    private long id;
     public String name;
     public int numAlbums;
     public int numSongs;
@@ -12,6 +12,10 @@ public class Artist implements Serializable {
     public Artist(long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public long getId() {
+        return id;
     }
 
     @Override

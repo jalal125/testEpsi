@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class Query {
 
-    public Uri uri;
+    private Uri uri;
     public String[] projection;
     public String selection;
     public String[] args;

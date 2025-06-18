@@ -16,31 +16,20 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Album implements
-        Serializable,
-        ArtworkProvider,
-        Comparable<Album>,
-        Sortable {
+public class Album implements Serializable, ArtworkProvider, Comparable<Album>, Sortable {
 
-    public long id;
+    private long id;
     public String name;
-
     public List<Artist> artists = new ArrayList<>();
     public String albumArtistName;
-
     public int year;
     public int numSongs;
     public int numDiscs;
-
     public long lastPlayed;
     public long dateAdded;
-
     public List<String> paths = new ArrayList<>();
-
     public int songPlayCount;
-
     private String artworkKey;
-
     private String sortKey;
 
     public Album(long id, String name, List<Artist> artists, String albumArtistName, int numSongs, int numDiscs, int year, long lastPlayed, long dateAdded, List<String> paths, int songPlayCount) {
@@ -55,8 +44,6 @@ public class Album implements
         this.dateAdded = dateAdded;
         this.paths = paths;
         this.songPlayCount = songPlayCount;
-
-        //Populate the artwork key & sort key properties if null.
         setSortKey();
         setArtworkKey();
     }
@@ -134,7 +121,7 @@ public class Album implements
         }
 
         public Builder songPlayCount(int playCount) {
-            songPlayCount = playCount;
+            this.songPlayCount = playCount;
             return this;
         }
 
@@ -144,19 +131,14 @@ public class Album implements
     }
 
     public AlbumArtist getAlbumArtist() {
-        return new AlbumArtist.Builder()
-                .name(albumArtistName)
-                .album(this)
-                .build();
+        return new AlbumArtist.Builder().name(albumArtistName).album(this).build();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Album album = (Album) o;
-
         if (id != album.id) return false;
         return name != null ? name.equals(album.name) : album.name == null;
     }
@@ -211,9 +193,9 @@ public class Album implements
     @Override
     public String getRemoteArtworkUrl() {
         try {
-            return "https://artwork.shuttlemusicplayer.app/api/v1/artwork"
-                    + "?artist=" + URLEncoder.encode(albumArtistName, Charset.forName("UTF-8").name())
-                    + "&album=" + URLEncoder.encode(name, Charset.forName("UTF-8").name());
+            return "https://artwork.shuttlemusicplayer.app/api/v1/artwork" +
+                    "?artist=" + URLEncoder.encode(albumArtistName, Charset.forName("UTF-8").name()) +
+                    "&album=" + URLEncoder.encode(name, Charset.forName("UTF-8").name());
         } catch (UnsupportedEncodingException e) {
             return null;
         }

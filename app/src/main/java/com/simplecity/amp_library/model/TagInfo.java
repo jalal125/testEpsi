@@ -20,7 +20,7 @@ import org.jaudiotagger.tag.TagException;
  */
 public class TagInfo implements Serializable {
 
-    public String artistName;
+    private String artistName;
     public String albumArtistName;
     public String albumName;
     public String trackName;
